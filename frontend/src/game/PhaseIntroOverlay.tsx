@@ -31,8 +31,8 @@ const INTROS: Partial<Record<number, IntroData>> = {
     pose: 'aprova',
     mensagens: [
       'Parabéns pelo SEITON! Próxima fase: SEISO — Senso de Limpeza.',
-      'Limpe cada área para revelar o que está escondido sob a sujeira.',
-      'Sujeira e anomalia são coisas diferentes. Encontrou uma anomalia real? Etiquete-a!',
+      'Esfregue cada área para revelar o achado escondido sob a sujeira.',
+      'Nem todo achado é problema: registre as anomalias reais e ignore o que é mundano.',
     ],
   },
   4: {

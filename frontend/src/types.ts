@@ -34,9 +34,9 @@ export interface SeisoTile {
   nome: string;
   emoji: string;
   limpo: boolean;
-  is_anomalia: boolean | null;
-  anomalia: string | null;
-  etiquetada: boolean;
+  descricao: string | null;
+  decisao: "registrar" | "ignorar" | null;
+  acertou: boolean | null;
 }
 
 export interface SeiketsuSpot {

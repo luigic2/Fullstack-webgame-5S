@@ -45,13 +45,15 @@ _SEITON_POOL: tuple[tuple[str, str, str, bool], ...] = (
     ("Nível de bolha", "📐", "slot-f", False),
 )
 
-_SEISO_POOL: tuple[tuple[str, str, str | None, bool ], ...] = (
-    ("Bancada com poeira", "🪟", "Bancada Vazia", False),
-    ("Piso com mancha de óleo", "🛢️", "Vazamento no flange inferior", True),
+# (nome, emoji, descrição revelada ao limpar, is_anomalia). Os mundanos têm
+# achados banais de propósito: o jogador precisa julgar, não só clicar.
+_SEISO_POOL: tuple[tuple[str, str, str, bool], ...] = (
+    ("Bancada com poeira", "🪟", "Só poeira leve — superfície íntegra", False),
+    ("Piso com mancha de óleo", "🛢️", "Vazamento de óleo no flange inferior", True),
     ("Painel elétrico empoeirado", "🔌", "Fio desencapado exposto", True),
-    ("Vidro da máquina embaçado", "🪞", "Vidro limpo e seguro", False),
+    ("Vidro da máquina embaçado", "🪞", "Vidro limpo, sem trincas", False),
     ("Base do motor suja", "⚙️", "Parafuso de fixação solto", True),
-    ("Canto da sala com restos", "🧹", "Canto Limpo e seguro", False),
+    ("Canto da sala com restos", "🧹", "Canto limpo, sem sujeira", False),
 )
 
 _SEIKETSU_POOL: tuple[tuple[str, str], ...] = (
@@ -98,8 +100,8 @@ def gen_seiso(seed: int) -> list[SeisoTile]:
     rng = _rng(seed, 3)
     escolhidos = rng.sample(_SEISO_POOL, k=5)
     return [
-        SeisoTile(id=f"seiso-{i}", nome=n, emoji=e, anomalia=a, is_anomalia=li)
-        for i, (n, e, a, li) in enumerate(escolhidos)
+        SeisoTile(id=f"seiso-{i}", nome=n, emoji=e, descricao=d, is_anomalia=li)
+        for i, (n, e, d, li) in enumerate(escolhidos)
     ]
 
 

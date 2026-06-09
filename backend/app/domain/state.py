@@ -51,15 +51,16 @@ class SeitonItem:
 
 @dataclass
 class SeisoTile:
-    """Área a limpar na fase SEISO. Pode esconder uma anomalia (gabarito)."""
+    """Área a inspecionar na fase SEISO. `is_anomalia` é gabarito; `descricao`
+    é o achado que o jogador lê para julgar (anomalia real ou algo mundano)."""
 
     id: str
     nome: str
     emoji: str
-    anomalia: str | None
+    descricao: str
     is_anomalia: bool
     limpo: bool = False
-    anomalia_etiquetada: bool = False
+    decisao: str | None = None  # None | "registrar" | "ignorar"
 
 
 @dataclass
@@ -194,10 +195,11 @@ def _public_phases(state: GameState) -> dict[str, object]:
                 "nome": t.nome,
                 "emoji": t.emoji,
                 "limpo": t.limpo,
-                # revela se há anomalia real só após limpar (não antecipa o gabarito)
-                "is_anomalia": t.is_anomalia if t.limpo else None,
-                "anomalia": t.anomalia if (t.limpo and t.is_anomalia) else None,
-                "etiquetada": t.anomalia_etiquetada,
+                # o achado só aparece após inspecionar; o gabarito (is_anomalia) NUNCA vaza
+                "descricao": t.descricao if t.limpo else None,
+                "decisao": t.decisao,
+                # acerto só é revelado depois que o jogador decide
+                "acertou": ((t.decisao == "registrar") == t.is_anomalia) if t.decisao is not None else None,
             }
             for t in state.seiso
         ],

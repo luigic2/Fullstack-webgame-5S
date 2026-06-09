@@ -1,5 +1,5 @@
-// SEISO — Limpar é inspecionar. Esfregue cada área; ao limpar, anomalias
-// escondidas aparecem e precisam ser etiquetadas (limpeza ≠ etiqueta).
+// SEISO — Limpar é inspecionar. Esfregue cada área para revelar o achado e,
+// com critério, decida: registrar a anomalia ou ignorar (limpeza ≠ etiqueta).
 import { AnimatePresence, motion } from 'framer-motion'
 import { useGameStore } from '../../store/gameStore'
 import type { SeisoTile } from '../../types'
@@ -14,7 +14,7 @@ export function SeisoPhase({ tiles }: Props): JSX.Element {
   return (
     <div className="rounded-2xl bg-white/10 p-4">
       <p className="mb-3 text-sm font-semibold text-white/80">
-        Esfregue cada superfície. Ao limpar, inspecione: etiquete o que estava escondido.
+        Esfregue cada superfície e leia o achado. Nem tudo é anomalia: registre o que importa e ignore o resto.
       </p>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {tiles.map((tile) => (
@@ -22,7 +22,7 @@ export function SeisoPhase({ tiles }: Props): JSX.Element {
             key={tile.id}
             tile={tile}
             onLimpar={() => void dispatch('seiso.limpar', { tileId: tile.id })}
-            onEtiquetar={() => void dispatch('seiso.etiquetar', { tileId: tile.id })}
+            onDecidir={(decisao) => void dispatch('seiso.decidir', { tileId: tile.id, decisao })}
           />
         ))}
       </div>
@@ -33,12 +33,13 @@ export function SeisoPhase({ tiles }: Props): JSX.Element {
 interface TileProps {
   tile: SeisoTile
   onLimpar: () => void
-  onEtiquetar: () => void
+  onDecidir: (decisao: 'registrar' | 'ignorar') => void
 }
 
-function Tile({ tile, onLimpar, onEtiquetar }: TileProps): JSX.Element {
+function Tile({ tile, onLimpar, onDecidir }: TileProps): JSX.Element {
+  const decidido = tile.decisao !== null
   return (
-    <div className="relative overflow-hidden rounded-xl bg-white p-3 text-center shadow-lg">
+    <div className="relative flex min-h-[160px] flex-col overflow-hidden rounded-xl bg-white p-3 text-center shadow-lg">
       <span className="text-4xl" aria-hidden="true">
         {tile.emoji}
       </span>
@@ -57,21 +58,57 @@ function Tile({ tile, onLimpar, onEtiquetar }: TileProps): JSX.Element {
         )}
       </AnimatePresence>
 
-      {tile.limpo && !tile.etiquetada && tile.is_anomalia !== false && (
-        <motion.button
-          initial={{ scale: 0.7 }}
-          animate={{ scale: 1 }}
-          onClick={onEtiquetar}
-          className="mt-2 w-full rounded-lg bg-marca-laranja px-2 py-1 text-xs font-bold text-white"
-          aria-label={`Etiquetar anomalia em ${tile.nome}: ${tile.anomalia ?? ''}`}
+      {tile.limpo && tile.descricao && (
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="mt-2 rounded-lg bg-marca-azul/5 px-2 py-1 text-[11px] font-medium italic text-marca-azul"
         >
-          🚩 {tile.anomalia}
-        </motion.button>
+          “{tile.descricao}”
+        </motion.p>
       )}
-      {tile.etiquetada && <p className="mt-2 text-xs font-bold text-senso-seiso">✅ Anomalia registrada</p>}
-      {tile.limpo && tile.is_anomalia === false && (
-        <p className="mt-2 text-xs font-semibold text-white/50">Limpo, sem anomalias</p>
+
+      {tile.limpo && !decidido && (
+        <div className="mt-auto flex gap-1 pt-2">
+          <button
+            onClick={() => onDecidir('registrar')}
+            className="flex-1 rounded-lg bg-marca-laranja px-1 py-1.5 text-[11px] font-bold text-white"
+            aria-label={`Registrar anomalia em ${tile.nome}`}
+          >
+            🚩 Registrar
+          </button>
+          <button
+            onClick={() => onDecidir('ignorar')}
+            className="flex-1 rounded-lg bg-gray-200 px-1 py-1.5 text-[11px] font-bold text-gray-600"
+            aria-label={`Ignorar ${tile.nome}`}
+          >
+            🙈 Ignorar
+          </button>
+        </div>
       )}
+
+      {decidido && <Resultado tile={tile} />}
     </div>
+  )
+}
+
+function Resultado({ tile }: { tile: SeisoTile }): JSX.Element {
+  const registrou = tile.decisao === 'registrar'
+  const ok = tile.acertou === true
+  const texto = ok
+    ? registrou
+      ? '✅ Anomalia registrada'
+      : '✅ Ignorado com razão'
+    : registrou
+      ? '⚠️ Falso positivo'
+      : '❌ Anomalia ignorada'
+  return (
+    <motion.p
+      initial={{ scale: 0.7 }}
+      animate={{ scale: 1 }}
+      className={`mt-auto pt-2 text-xs font-bold ${ok ? 'text-senso-seiso' : 'text-red-500'}`}
+    >
+      {texto}
+    </motion.p>
   )
 }

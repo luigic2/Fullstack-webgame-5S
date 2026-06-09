@@ -15,6 +15,7 @@ from .sensos import PHASE_ORDER, Senso
 from .state import (
     GameState,
     SeiriZona,
+    SeisoTile,
     score_5s,
 )
 
@@ -92,8 +93,8 @@ def apply(state: GameState, ctype: str, payload: dict[str, object], now: float) 
         return _seiton(state, payload)
     if ctype == "seiso.limpar":
         return _seiso_limpar(state, payload)
-    if ctype == "seiso.etiquetar":
-        return _seiso_etiquetar(state, payload)
+    if ctype == "seiso.decidir":
+        return _seiso_decidir(state, payload)
     if ctype == "seiketsu.snapshot":
         state.seiketsu_snapshot = True
         return CommandOutcome(None, "pergunta", "Padrão fotografado! Agora encontre os desvios.")
@@ -140,31 +141,44 @@ def _seiton(state: GameState, payload: dict[str, object]) -> CommandOutcome:
 
 def _seiso_limpar(state: GameState, payload: dict[str, object]) -> CommandOutcome:
     tile = next(t for t in state.seiso if t.id == _s(payload, "tileId"))
-    tile.limpo = True
-    state.score += scoring.PONTOS_ACERTO
+    if not tile.limpo:
+        tile.limpo = True
+        state.score += scoring.PONTOS_ACERTO  # inspecionar é a ação que pontua
     _recompute_seiso(state)
-    if tile.anomalia is not None and tile.is_anomalia:
-        return CommandOutcome(True, "pergunta", f"Olha só: {tile.anomalia}. Etiquete a anomalia!")
-    return CommandOutcome(True, "aprova", "Limpo! Superfície inspecionada, nada escondido aqui.")
+    return CommandOutcome(True, "pergunta", f"Achado: “{tile.descricao}”. É anomalia? Registre ou ignore.")
 
 
-def _seiso_etiquetar(state: GameState, payload: dict[str, object]) -> CommandOutcome:
+def _seiso_decidir(state: GameState, payload: dict[str, object]) -> CommandOutcome:
     tile = next(t for t in state.seiso if t.id == _s(payload, "tileId"))
-    real = tile.anomalia is not None and tile.is_anomalia and tile.limpo
-    if real:
-        tile.anomalia_etiquetada = True
-    else:
+    decisao = _s(payload, "decisao")
+    if decisao not in ("registrar", "ignorar"):
+        raise UnknownCommand("decisão inválida")
+    if not tile.limpo or tile.decisao is not None:
+        return CommandOutcome(None, "pergunta", "Inspecione a área antes de decidir.")
+    tile.decisao = decisao
+    registrou = decisao == "registrar"
+    correto = registrou == tile.is_anomalia
+    if registrou and not tile.is_anomalia:
         state.falsos_positivos += 1
-    state.score += scoring.pontos_anomalia(real)
+    if correto:
+        state.score += scoring.PONTOS_ANOMALIA  # decisão certa pontua; errada vale 0
     _recompute_seiso(state)
-    _registrar(state, real)
-    if real:
-        return CommandOutcome(True, "comemora", "Anomalia etiquetada — você evitou uma falha futura!")
-    return CommandOutcome(False, "boasvindas", "Aqui não havia anomalia: limpeza ≠ etiqueta.")
+    _registrar(state, correto)
+    if correto:
+        if registrou:
+            return CommandOutcome(True, "comemora", "Anomalia registrada — você evitou uma falha futura!")
+        return CommandOutcome(True, "aprova", "Certo: nada de anormal aqui. Foco no que importa!")
+    if registrou:
+        return CommandOutcome(False, "boasvindas", "Falso positivo: isso era mundano. Registrar demais vira ruído.")
+    return CommandOutcome(False, "pergunta", "Você ignorou uma anomalia real — atenção redobrada!")
+
+
+def _seiso_acertou(tile: SeisoTile) -> bool:
+    return tile.decisao is not None and (tile.decisao == "registrar") == tile.is_anomalia
 
 
 def _recompute_seiso(state: GameState) -> None:
-    corretos = sum(t.limpo and (t.anomalia is None or t.anomalia_etiquetada) for t in state.seiso)
+    corretos = sum(_seiso_acertou(t) for t in state.seiso)
     _set_radar(state, Senso.SEISO, corretos, len(state.seiso))
 
 
@@ -251,7 +265,7 @@ def _avancar(state: GameState, now: float) -> CommandOutcome:
 def _conceder_badges(state: GameState) -> None:
     if all(i.resolvido == i.destino for i in state.seiri):
         state.badges.add("Zero Refugo")
-    if all(t.anomalia_etiquetada for t in state.seiso if t.anomalia is not None):
+    if all(t.decisao == "registrar" for t in state.seiso if t.is_anomalia):
         state.badges.add("Caçador de Anomalias")
     if state.falsos_positivos == 0 and any(s.desvio for s in state.seiketsu):
         state.badges.add("Olho de Águia")

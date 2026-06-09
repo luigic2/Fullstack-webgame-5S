@@ -126,9 +126,9 @@ def from_json(raw: str) -> GameState:
         seiso=[
             SeisoTile(
                 id=_str(t, "id"), nome=_str(t, "nome"), emoji=_str(t, "emoji"),
-                anomalia=None if t.get("anomalia") is None else _str(t, "anomalia"),
-                is_anomalia=_bool(t, "is_anomalia"),limpo=_bool(t, "limpo"),
-                anomalia_etiquetada=_bool(t, "anomalia_etiquetada"),
+                descricao=_str(t, "descricao"),
+                is_anomalia=_bool(t, "is_anomalia"), limpo=_bool(t, "limpo"),
+                decisao=None if t.get("decisao") is None else _str(t, "decisao"),
             )
             for t in _list(d, "seiso")
         ],

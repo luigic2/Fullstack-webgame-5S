@@ -110,30 +110,41 @@ def test_desafio_do_mestre_valida_no_servidor() -> None:
 
 def test_seiso_score_maximo_play_perfeito() -> None:
     state = engine.new_game("s", seed=1, now=0.0)
-    # Avançar até a fase SEISO
-    for item in state.seiri:
-        engine.apply(state, "seiri.classificar", {"itemId": item.id, "zona": item.destino.value}, 1.0)
-    engine.apply(state, "fase.avancar", {}, now=2.0)
-    for item in state.seiton:
-        engine.apply(state, "seiton.encaixar", {"itemId": item.id, "slot": item.slot}, 3.0)
-    engine.apply(state, "fase.avancar", {}, now=4.0)
-    # Limpar todos os tiles: cada limpeza vale PONTOS_ACERTO (100)
-    score_antes = state.score
+    # Limpar todos os tiles: cada inspeção vale PONTOS_ACERTO (100).
     for tile in state.seiso:
-        engine.apply(state, "seiso.limpar", {"tileId": tile.id}, 5.0)
-    assert state.score == score_antes + 100 * len(state.seiso)
-    # public_view expõe is_anomalia corretamente por tile
-    view = public_view(state)
-    for tv in view["phases"]["SEISO"]:
-        tile = next(t for t in state.seiso if t.id == tv["id"])
-        assert tv["is_anomalia"] == tile.is_anomalia
-    # Etiquetar só as anomalias reais → +60 cada, sem penalidade
-    score_apos_limpeza = state.score
-    anomalias_reais = [t for t in state.seiso if t.is_anomalia]
-    for tile in anomalias_reais:
-        engine.apply(state, "seiso.etiquetar", {"tileId": tile.id}, 6.0)
-    assert state.score == score_apos_limpeza + 60 * len(anomalias_reais)
+        engine.apply(state, "seiso.limpar", {"tileId": tile.id}, 1.0)
+    assert state.score == 100 * len(state.seiso)
+    # A descrição é revelada após limpar; o gabarito (is_anomalia) NUNCA vaza.
+    seiso_view = public_view(state)["phases"]["SEISO"]  # type: ignore[index]
+    for tv in seiso_view:
+        assert tv["descricao"] is not None
+        assert "is_anomalia" not in tv
+    # Decisão correta em cada tile (registrar anomalia, ignorar mundano) → +60 cada.
+    score_pos_limpeza = state.score
+    for tile in state.seiso:
+        decisao = "registrar" if tile.is_anomalia else "ignorar"
+        engine.apply(state, "seiso.decidir", {"tileId": tile.id, "decisao": decisao}, 2.0)
+    assert state.score == score_pos_limpeza + 60 * len(state.seiso)
     assert state.falsos_positivos == 0
+    assert state.radar[Senso.SEISO] == 100.0
+
+
+def test_seiso_decisao_errada_nao_pontua() -> None:
+    state = engine.new_game("s", seed=1, now=0.0)
+    mundano = next(t for t in state.seiso if not t.is_anomalia)
+    anomalia = next(t for t in state.seiso if t.is_anomalia)
+    engine.apply(state, "seiso.limpar", {"tileId": mundano.id}, 1.0)
+    engine.apply(state, "seiso.limpar", {"tileId": anomalia.id}, 1.0)
+    base = state.score  # só os pontos de limpeza
+    # Registrar um mundano = falso positivo: 0 pontos (sem penalidade).
+    out = engine.apply(state, "seiso.decidir", {"tileId": mundano.id, "decisao": "registrar"}, 2.0)
+    assert out.correto is False
+    assert state.score == base
+    assert state.falsos_positivos == 1
+    # Ignorar uma anomalia real: 0 pontos.
+    out2 = engine.apply(state, "seiso.decidir", {"tileId": anomalia.id, "decisao": "ignorar"}, 3.0)
+    assert out2.correto is False
+    assert state.score == base
 
 
 def test_score_5s_e_media_dos_eixos() -> None:
