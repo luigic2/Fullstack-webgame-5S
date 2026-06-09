@@ -1,0 +1,646 @@
+{
+  "fonte": "Teste seu Conhecimento — livro '5S: Barreiras e Soluções' (Haroldo Ribeiro / PDCA Consultoria em Qualidade)",
+  "uso": "Dado de domínio do BACKEND. O gabarito (sensoCorreto) nunca deve trafegar para o cliente. O cliente recebe apenas o texto da situação; a validação do senso é server-side.",
+  "sensos": {
+    "1": {
+      "id": 1,
+      "key": "SEIRI",
+      "pt": "Utilização",
+      "acao": "Separar o necessário do desnecessário"
+    },
+    "2": {
+      "id": 2,
+      "key": "SEITON",
+      "pt": "Ordenação",
+      "acao": "Um lugar para cada coisa; identificar e ordenar"
+    },
+    "3": {
+      "id": 3,
+      "key": "SEISO",
+      "pt": "Limpeza",
+      "acao": "Limpar e, ao limpar, inspecionar"
+    },
+    "4": {
+      "id": 4,
+      "key": "SEIKETSU",
+      "pt": "Padronização",
+      "acao": "Criar e manter padrões visuais e de saúde"
+    },
+    "5": {
+      "id": 5,
+      "key": "SHITSUKE",
+      "pt": "Disciplina",
+      "acao": "Transformar em hábito; auditar e sustentar"
+    }
+  },
+  "distribuicaoGabarito": {
+    "SEIRI": 14,
+    "SEITON": 22,
+    "SEISO": 19,
+    "SEIKETSU": 27,
+    "SHITSUKE": 18
+  },
+  "totalSituacoes": 100,
+  "banco": [
+    {
+      "id": 1,
+      "situacao": "A altura de interruptores dificulta o acesso",
+      "sensoCorreto": 2,
+      "senso": "SEITON"
+    },
+    {
+      "id": 2,
+      "situacao": "A disposição de cabos elétricos provoca riscos",
+      "sensoCorreto": 2,
+      "senso": "SEITON"
+    },
+    {
+      "id": 3,
+      "situacao": "A identificação dos locais de guarda não está padronizada",
+      "sensoCorreto": 4,
+      "senso": "SEIKETSU"
+    },
+    {
+      "id": 4,
+      "situacao": "A maioria dos prazos não é cumprida",
+      "sensoCorreto": 5,
+      "senso": "SHITSUKE"
+    },
+    {
+      "id": 5,
+      "situacao": "A pintura das tubulações não está padronizada",
+      "sensoCorreto": 4,
+      "senso": "SEIKETSU"
+    },
+    {
+      "id": 6,
+      "situacao": "A posição de alguns móveis dificulta a circulação e o acesso",
+      "sensoCorreto": 2,
+      "senso": "SEITON"
+    },
+    {
+      "id": 7,
+      "situacao": "A prática do 5S ainda não é espontânea",
+      "sensoCorreto": 5,
+      "senso": "SHITSUKE"
+    },
+    {
+      "id": 8,
+      "situacao": "A retirada de alguns recursos desordena os demais",
+      "sensoCorreto": 2,
+      "senso": "SEITON"
+    },
+    {
+      "id": 9,
+      "situacao": "Algumas identificações estão apagadas",
+      "sensoCorreto": 2,
+      "senso": "SEITON"
+    },
+    {
+      "id": 10,
+      "situacao": "Algumas pessoas despejam óleo no esgoto",
+      "sensoCorreto": 5,
+      "senso": "SHITSUKE"
+    },
+    {
+      "id": 11,
+      "situacao": "Algumas pessoas não consultam a caixa de entrada de e-mails",
+      "sensoCorreto": 5,
+      "senso": "SHITSUKE"
+    },
+    {
+      "id": 12,
+      "situacao": "Algumas pessoas não estão utilizando os recursos ergonômicos oferecidos pela empresa",
+      "sensoCorreto": 5,
+      "senso": "SHITSUKE"
+    },
+    {
+      "id": 13,
+      "situacao": "Algumas pessoas não fazem ginástica laboral",
+      "sensoCorreto": 4,
+      "senso": "SEIKETSU"
+    },
+    {
+      "id": 14,
+      "situacao": "Algumas pessoas não usam os EPIs exigidos",
+      "sensoCorreto": 5,
+      "senso": "SHITSUKE"
+    },
+    {
+      "id": 15,
+      "situacao": "Algumas pessoas se alimentam em locais não higiênicos",
+      "sensoCorreto": 4,
+      "senso": "SEIKETSU"
+    },
+    {
+      "id": 16,
+      "situacao": "Algumas pessoas usam celular em reuniões contrariando as regras",
+      "sensoCorreto": 5,
+      "senso": "SHITSUKE"
+    },
+    {
+      "id": 17,
+      "situacao": "Algumas reuniões são iniciadas com atraso",
+      "sensoCorreto": 5,
+      "senso": "SHITSUKE"
+    },
+    {
+      "id": 18,
+      "situacao": "Alguns equipamentos com problemas de conservação",
+      "sensoCorreto": 1,
+      "senso": "SEIRI"
+    },
+    {
+      "id": 19,
+      "situacao": "Alguns locais de guarda são inadequados",
+      "sensoCorreto": 2,
+      "senso": "SEITON"
+    },
+    {
+      "id": 20,
+      "situacao": "Alguns mecânicos não estão fazendo o histórico dos serviços conforme procedimento",
+      "sensoCorreto": 5,
+      "senso": "SHITSUKE"
+    },
+    {
+      "id": 21,
+      "situacao": "Alguns operadores não estão apontando registros nos formulários",
+      "sensoCorreto": 5,
+      "senso": "SHITSUKE"
+    },
+    {
+      "id": 22,
+      "situacao": "Alguns operadores não fazem a limpeza de acordo com o padrão estabelecido",
+      "sensoCorreto": 5,
+      "senso": "SHITSUKE"
+    },
+    {
+      "id": 23,
+      "situacao": "Alguns recursos de uso esporádico estão dentro de armários não compartilhados",
+      "sensoCorreto": 1,
+      "senso": "SEIRI"
+    },
+    {
+      "id": 24,
+      "situacao": "Alguns recursos são guardados em locais de difícil acesso visual",
+      "sensoCorreto": 2,
+      "senso": "SEITON"
+    },
+    {
+      "id": 25,
+      "situacao": "Área do café com açúcar derramado na mesa e no piso",
+      "sensoCorreto": 3,
+      "senso": "SEISO"
+    },
+    {
+      "id": 26,
+      "situacao": "Armários posicionados em locais que dificultam a abertura de portas",
+      "sensoCorreto": 2,
+      "senso": "SEITON"
+    },
+    {
+      "id": 27,
+      "situacao": "As regras de convivência estão devidamente divulgadas",
+      "sensoCorreto": 4,
+      "senso": "SEIKETSU"
+    },
+    {
+      "id": 28,
+      "situacao": "As pessoas deixam a copa suja após o uso",
+      "sensoCorreto": 3,
+      "senso": "SEISO"
+    },
+    {
+      "id": 29,
+      "situacao": "As pessoas demoram a retornar do almoço, contrariando as regras do setor",
+      "sensoCorreto": 5,
+      "senso": "SHITSUKE"
+    },
+    {
+      "id": 30,
+      "situacao": "As pessoas não obedecem às regras do fumo",
+      "sensoCorreto": 5,
+      "senso": "SHITSUKE"
+    },
+    {
+      "id": 31,
+      "situacao": "As pessoas não têm iniciativa para renegociarem prazos em casos de atrasos",
+      "sensoCorreto": 5,
+      "senso": "SHITSUKE"
+    },
+    {
+      "id": 32,
+      "situacao": "As tomadas elétricas não estão com uma identificação padronizada",
+      "sensoCorreto": 4,
+      "senso": "SEIKETSU"
+    },
+    {
+      "id": 33,
+      "situacao": "Banheiros com água no piso",
+      "sensoCorreto": 3,
+      "senso": "SEISO"
+    },
+    {
+      "id": 34,
+      "situacao": "Cadeiras da sala de treinamento não são ergonômicas",
+      "sensoCorreto": 4,
+      "senso": "SEIKETSU"
+    },
+    {
+      "id": 35,
+      "situacao": "Cadeiras de escritórios não ergonômicas",
+      "sensoCorreto": 4,
+      "senso": "SEIKETSU"
+    },
+    {
+      "id": 36,
+      "situacao": "Definição de sistemática de reconhecimento dos avanços de 5S",
+      "sensoCorreto": 4,
+      "senso": "SEIKETSU"
+    },
+    {
+      "id": 37,
+      "situacao": "Definição de temporalidade para descarte dos diversos tipos de documentos",
+      "sensoCorreto": 4,
+      "senso": "SEIKETSU"
+    },
+    {
+      "id": 38,
+      "situacao": "Desenvolvimento de padrões de referência em ordem e limpeza",
+      "sensoCorreto": 4,
+      "senso": "SEIKETSU"
+    },
+    {
+      "id": 39,
+      "situacao": "Desperdício de água e energia",
+      "sensoCorreto": 1,
+      "senso": "SEIRI"
+    },
+    {
+      "id": 40,
+      "situacao": "Divisão de áreas e responsabilidades pelo 5S",
+      "sensoCorreto": 4,
+      "senso": "SEIKETSU"
+    },
+    {
+      "id": 41,
+      "situacao": "Divulgação dos resultados das auditorias e autoavaliações de 5S, inclusive com fotografias",
+      "sensoCorreto": 4,
+      "senso": "SEIKETSU"
+    },
+    {
+      "id": 42,
+      "situacao": "Empilhamento de documentos dificulta a localização",
+      "sensoCorreto": 2,
+      "senso": "SEITON"
+    },
+    {
+      "id": 43,
+      "situacao": "Estabelecimento de prazos para solução de problemas de 5S",
+      "sensoCorreto": 4,
+      "senso": "SEIKETSU"
+    },
+    {
+      "id": 44,
+      "situacao": "Falta de alguns recursos necessários ao ambiente",
+      "sensoCorreto": 1,
+      "senso": "SEIRI"
+    },
+    {
+      "id": 45,
+      "situacao": "Falta definir local para bolsas",
+      "sensoCorreto": 2,
+      "senso": "SEITON"
+    },
+    {
+      "id": 46,
+      "situacao": "Falta demarcação de veículos no estacionamento",
+      "sensoCorreto": 2,
+      "senso": "SEITON"
+    },
+    {
+      "id": 47,
+      "situacao": "Falta identificação em prateleiras e compartimentos fechados",
+      "sensoCorreto": 2,
+      "senso": "SEITON"
+    },
+    {
+      "id": 48,
+      "situacao": "Falta identificação em várias pastas de documentos",
+      "sensoCorreto": 2,
+      "senso": "SEITON"
+    },
+    {
+      "id": 49,
+      "situacao": "Falta padronizar os itens das caixas de ferramentas dos mecânicos",
+      "sensoCorreto": 4,
+      "senso": "SEIKETSU"
+    },
+    {
+      "id": 50,
+      "situacao": "Falta rotina para higienização de ar condicionado",
+      "sensoCorreto": 4,
+      "senso": "SEIKETSU"
+    },
+    {
+      "id": 51,
+      "situacao": "Falta sinalização de acesso a vários locais do ambiente",
+      "sensoCorreto": 2,
+      "senso": "SEITON"
+    },
+    {
+      "id": 52,
+      "situacao": "Falta sinalização de segurança em alguns pontos",
+      "sensoCorreto": 1,
+      "senso": "SEIRI"
+    },
+    {
+      "id": 53,
+      "situacao": "Falta sinalização de segurança na entrada da subestação elétrica",
+      "sensoCorreto": 2,
+      "senso": "SEITON"
+    },
+    {
+      "id": 54,
+      "situacao": "Ferramentas da Manutenção largadas na área de produção",
+      "sensoCorreto": 1,
+      "senso": "SEIRI"
+    },
+    {
+      "id": 55,
+      "situacao": "Frequência de retirada dos resíduos das lixeiras insuficiente",
+      "sensoCorreto": 3,
+      "senso": "SEISO"
+    },
+    {
+      "id": 56,
+      "situacao": "Há alguns produtos defeituosos sem a devida identificação",
+      "sensoCorreto": 5,
+      "senso": "SHITSUKE"
+    },
+    {
+      "id": 57,
+      "situacao": "Há mistura de lixo na coleta seletiva",
+      "sensoCorreto": 2,
+      "senso": "SEITON"
+    },
+    {
+      "id": 58,
+      "situacao": "Há um volume de recursos maior que o espaço disponível",
+      "sensoCorreto": 2,
+      "senso": "SEITON"
+    },
+    {
+      "id": 59,
+      "situacao": "Há vários recursos empilhados dificultando o acesso",
+      "sensoCorreto": 2,
+      "senso": "SEITON"
+    },
+    {
+      "id": 60,
+      "situacao": "Identificação padronizada de pastas de documentos",
+      "sensoCorreto": 4,
+      "senso": "SEIKETSU"
+    },
+    {
+      "id": 61,
+      "situacao": "Iluminação inadequada",
+      "sensoCorreto": 4,
+      "senso": "SEIKETSU"
+    },
+    {
+      "id": 62,
+      "situacao": "Instalações elétricas precárias provocando riscos",
+      "sensoCorreto": 1,
+      "senso": "SEIRI"
+    },
+    {
+      "id": 63,
+      "situacao": "Lâmpadas sem funcionar",
+      "sensoCorreto": 1,
+      "senso": "SEIRI"
+    },
+    {
+      "id": 64,
+      "situacao": "Lixeiras transbordando",
+      "sensoCorreto": 2,
+      "senso": "SEITON"
+    },
+    {
+      "id": 65,
+      "situacao": "Manchas nas paredes",
+      "sensoCorreto": 3,
+      "senso": "SEISO"
+    },
+    {
+      "id": 66,
+      "situacao": "Não há identificação de ambientes e postos de trabalho",
+      "sensoCorreto": 4,
+      "senso": "SEIKETSU"
+    },
+    {
+      "id": 67,
+      "situacao": "Não há lixeira suficiente para o volume de lixo gerado",
+      "sensoCorreto": 3,
+      "senso": "SEISO"
+    },
+    {
+      "id": 68,
+      "situacao": "Não há locais definidos para vários recursos do ambiente",
+      "sensoCorreto": 2,
+      "senso": "SEITON"
+    },
+    {
+      "id": 69,
+      "situacao": "Não há procedimento para a limpeza",
+      "sensoCorreto": 3,
+      "senso": "SEISO"
+    },
+    {
+      "id": 70,
+      "situacao": "Não há providências para alguns problemas de conservação",
+      "sensoCorreto": 1,
+      "senso": "SEIRI"
+    },
+    {
+      "id": 71,
+      "situacao": "Não há regras para atrasos em reuniões",
+      "sensoCorreto": 4,
+      "senso": "SEIKETSU"
+    },
+    {
+      "id": 72,
+      "situacao": "Não há um padrão para a sinalização do piso",
+      "sensoCorreto": 4,
+      "senso": "SEIKETSU"
+    },
+    {
+      "id": 73,
+      "situacao": "Não há uma identificação padronizada de equipamentos",
+      "sensoCorreto": 4,
+      "senso": "SEIKETSU"
+    },
+    {
+      "id": 74,
+      "situacao": "Não há uma sinalização padronizada para os avisos de segurança",
+      "sensoCorreto": 4,
+      "senso": "SEIKETSU"
+    },
+    {
+      "id": 75,
+      "situacao": "O procedimento de limpeza só é cumprido quando sobra tempo",
+      "sensoCorreto": 5,
+      "senso": "SHITSUKE"
+    },
+    {
+      "id": 76,
+      "situacao": "Óleo de empilhadeira derramando no piso do almoxarifado",
+      "sensoCorreto": 3,
+      "senso": "SEISO"
+    },
+    {
+      "id": 77,
+      "situacao": "Óleo no piso",
+      "sensoCorreto": 3,
+      "senso": "SEISO"
+    },
+    {
+      "id": 78,
+      "situacao": "Papéis no piso",
+      "sensoCorreto": 3,
+      "senso": "SEISO"
+    },
+    {
+      "id": 79,
+      "situacao": "Papéis usados largados no piso do banheiro",
+      "sensoCorreto": 3,
+      "senso": "SEISO"
+    },
+    {
+      "id": 80,
+      "situacao": "Paredes com reboco irregular",
+      "sensoCorreto": 1,
+      "senso": "SEIRI"
+    },
+    {
+      "id": 81,
+      "situacao": "Poeira gerada no ambiente sem o devido controle",
+      "sensoCorreto": 3,
+      "senso": "SEISO"
+    },
+    {
+      "id": 82,
+      "situacao": "Ponta de cigarro em cantos de parede",
+      "sensoCorreto": 3,
+      "senso": "SEISO"
+    },
+    {
+      "id": 83,
+      "situacao": "Reciclagem de 5S para os novos colegas",
+      "sensoCorreto": 4,
+      "senso": "SEIKETSU"
+    },
+    {
+      "id": 84,
+      "situacao": "Recursos desnecessários são mantidos no ambiente",
+      "sensoCorreto": 1,
+      "senso": "SEIRI"
+    },
+    {
+      "id": 85,
+      "situacao": "Recursos espalhados de forma que a localização é dificultada",
+      "sensoCorreto": 2,
+      "senso": "SEITON"
+    },
+    {
+      "id": 86,
+      "situacao": "Recursos improvisados dentro das bancadas gerando perdas",
+      "sensoCorreto": 1,
+      "senso": "SEIRI"
+    },
+    {
+      "id": 87,
+      "situacao": "Resíduos de serviços da Manutenção deixados nos equipamentos",
+      "sensoCorreto": 3,
+      "senso": "SEISO"
+    },
+    {
+      "id": 88,
+      "situacao": "Reuniões relâmpago para discutir os problemas de 5S",
+      "sensoCorreto": 4,
+      "senso": "SEIKETSU"
+    },
+    {
+      "id": 89,
+      "situacao": "Sala da copiadora com grampos e restos de papéis no piso",
+      "sensoCorreto": 3,
+      "senso": "SEISO"
+    },
+    {
+      "id": 90,
+      "situacao": "São encontrados problemas comportamentais durante as autoavaliações",
+      "sensoCorreto": 5,
+      "senso": "SHITSUKE"
+    },
+    {
+      "id": 91,
+      "situacao": "São feitas autoavaliações mensais de 5S",
+      "sensoCorreto": 4,
+      "senso": "SEIKETSU"
+    },
+    {
+      "id": 92,
+      "situacao": "São mantidos alguns itens acima do nível máximo sinalizado",
+      "sensoCorreto": 5,
+      "senso": "SHITSUKE"
+    },
+    {
+      "id": 93,
+      "situacao": "Sinalização de sentido de fluxo, de rotação e de níveis de produto",
+      "sensoCorreto": 4,
+      "senso": "SEIKETSU"
+    },
+    {
+      "id": 94,
+      "situacao": "Sujeira atrás do armário",
+      "sensoCorreto": 3,
+      "senso": "SEISO"
+    },
+    {
+      "id": 95,
+      "situacao": "Sujeira em locais de difícil acesso",
+      "sensoCorreto": 3,
+      "senso": "SEISO"
+    },
+    {
+      "id": 96,
+      "situacao": "Sujeira na parede",
+      "sensoCorreto": 3,
+      "senso": "SEISO"
+    },
+    {
+      "id": 97,
+      "situacao": "Tubulações com isolamentos térmicos quebrados",
+      "sensoCorreto": 1,
+      "senso": "SEIRI"
+    },
+    {
+      "id": 98,
+      "situacao": "Várias sinalizações estão em locais de difícil acesso visual",
+      "sensoCorreto": 2,
+      "senso": "SEITON"
+    },
+    {
+      "id": 99,
+      "situacao": "Vazamento de produtos contaminando o piso",
+      "sensoCorreto": 3,
+      "senso": "SEISO"
+    },
+    {
+      "id": 100,
+      "situacao": "Vazamentos de óleo em algumas máquinas",
+      "sensoCorreto": 1,
+      "senso": "SEIRI"
+    }
+  ]
+}

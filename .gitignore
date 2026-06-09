@@ -1,0 +1,28 @@
+# Documento confidencial do desafio — não publicar
+documentacao-desafio-tecnico.pdf
+
+# Python / backend
+backend/.venv/
+__pycache__/
+*.py[cod]
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+*.db
+*.egg-info/
+
+# Node / frontend
+node_modules/
+frontend/dist/
+*.tsbuildinfo
+*.local
+
+# Ambiente
+.env
+.env.*
+!.env.example
+
+# Editores / SO
+.DS_Store
+.vscode/
+.idea/

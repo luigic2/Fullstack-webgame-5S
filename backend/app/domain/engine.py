@@ -1,0 +1,260 @@
+"""Reducer autoritativo: cria a partida e aplica comandos ao estado.
+
+Toda regra de negócio (validação de senso, pontuação, avanço de fase,
+decaimento) vive aqui. A camada HTTP só traduz DTOs ↔ comandos e serializa
+a `public_view`. Nenhum gabarito sai deste módulo.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+from . import content, scoring, situacoes
+from .decay import aplicar_decay
+from .sensos import PHASE_ORDER, Senso
+from .state import (
+    GameState,
+    SeiriZona,
+    score_5s,
+)
+
+ACOES_POR_DESAFIO = 4
+BUMP_SUSTENTACAO = 8.0
+
+
+@dataclass
+class CommandOutcome:
+    """Feedback de um comando para o Mentor reagir no cliente."""
+
+    correto: bool | None
+    mentor: str  # "pergunta" | "boasvindas" | "comemora" | "aprova"
+    mensagem: str
+
+
+class UnknownCommand(Exception):
+    """Tipo de comando não reconhecido."""
+
+
+def new_game(session_id: str, seed: int, now: float) -> GameState:
+    state = GameState(
+        session_id=session_id,
+        seed=seed,
+        created_at=now,
+        last_decay_at=now,
+        seiri=content.gen_seiri(seed),
+        seiton=content.gen_seiton(seed),
+        seiso=content.gen_seiso(seed),
+        seiketsu=content.gen_seiketsu(seed),
+        shitsuke=content.gen_shitsuke(seed),
+    )
+    return state
+
+
+def _s(payload: dict[str, object], key: str) -> str:
+    valor = payload.get(key)
+    if not isinstance(valor, str):
+        raise UnknownCommand(f"campo '{key}' inválido")
+    return valor
+
+
+def _b(payload: dict[str, object], key: str) -> bool:
+    valor = payload.get(key)
+    if not isinstance(valor, bool):
+        raise UnknownCommand(f"campo '{key}' inválido")
+    return valor
+
+
+def _i(payload: dict[str, object], key: str) -> int:
+    valor = payload.get(key)
+    if not isinstance(valor, int) or isinstance(valor, bool):
+        raise UnknownCommand(f"campo '{key}' inválido")
+    return valor
+
+
+def _set_radar(state: GameState, senso: Senso, corretos: int, total: int) -> None:
+    state.radar[senso] = (corretos / total * 100.0) if total else 0.0
+
+
+def _registrar(state: GameState, correto: bool) -> None:
+    state.acoes += 1
+    if correto:
+        state.streak += 1
+        state.melhor_streak = max(state.melhor_streak, state.streak)
+    else:
+        state.streak = 0
+
+
+def apply(state: GameState, ctype: str, payload: dict[str, object], now: float) -> CommandOutcome:
+    """Aplica um comando ao estado (mutação) e devolve o feedback do Mentor."""
+    if ctype == "seiri.classificar":
+        return _seiri(state, payload)
+    if ctype == "seiton.encaixar":
+        return _seiton(state, payload)
+    if ctype == "seiso.limpar":
+        return _seiso_limpar(state, payload)
+    if ctype == "seiso.etiquetar":
+        return _seiso_etiquetar(state, payload)
+    if ctype == "seiketsu.snapshot":
+        state.seiketsu_snapshot = True
+        return CommandOutcome(None, "pergunta", "Padrão fotografado! Agora encontre os desvios.")
+    if ctype == "seiketsu.avaliar":
+        return _seiketsu(state, payload)
+    if ctype == "shitsuke.corrigir":
+        return _shitsuke(state, payload, now)
+    if ctype == "shitsuke.tick":
+        _decay(state, now)
+        return CommandOutcome(None, "pergunta", "A entropia avança — sustente o padrão!")
+    if ctype == "desafio.classificar":
+        return _desafio(state, payload)
+    if ctype == "fase.avancar":
+        return _avancar(state, now)
+    raise UnknownCommand(ctype)
+
+
+def _seiri(state: GameState, payload: dict[str, object]) -> CommandOutcome:
+    item = next(i for i in state.seiri if i.id == _s(payload, "itemId"))
+    zona = SeiriZona(_s(payload, "zona"))
+    correto = zona == item.destino
+    item.resolvido = zona
+    _set_radar(state, Senso.SEIRI, sum(i.resolvido == i.destino for i in state.seiri), len(state.seiri))
+    state.score += scoring.pontos_classificacao(correto, state.streak)
+    _registrar(state, correto)
+    _talvez_desafio(state)
+    if correto:
+        return CommandOutcome(True, "comemora", f"Isso! {item.nome} no lugar certo.")
+    return CommandOutcome(False, "boasvindas", "Quase. Item raro não é lixo — vai pra etiqueta vermelha.")
+
+
+def _seiton(state: GameState, payload: dict[str, object]) -> CommandOutcome:
+    item = next(i for i in state.seiton if i.id == _s(payload, "itemId"))
+    slot = _s(payload, "slot")
+    item.encaixado_em = slot
+    correto = slot == item.slot
+    _set_radar(state, Senso.SEITON, sum(i.encaixado_em == i.slot for i in state.seiton), len(state.seiton))
+    state.score += scoring.pontos_classificacao(correto, state.streak)
+    _registrar(state, correto)
+    _talvez_desafio(state)
+    msg = "Encaixe perfeito — cada coisa no seu lugar!" if correto else "Esse contorno é de outra peça."
+    return CommandOutcome(correto, "comemora" if correto else "boasvindas", msg)
+
+
+def _seiso_limpar(state: GameState, payload: dict[str, object]) -> CommandOutcome:
+    tile = next(t for t in state.seiso if t.id == _s(payload, "tileId"))
+    tile.limpo = True
+    _recompute_seiso(state)
+    if tile.anomalia is not None:
+        return CommandOutcome(True, "pergunta", f"Olha só: {tile.anomalia}. Etiquete a anomalia!")
+    return CommandOutcome(True, "aprova", "Limpo! Superfície inspecionada, nada escondido aqui.")
+
+
+def _seiso_etiquetar(state: GameState, payload: dict[str, object]) -> CommandOutcome:
+    tile = next(t for t in state.seiso if t.id == _s(payload, "tileId"))
+    real = tile.anomalia is not None and tile.limpo
+    if real:
+        tile.anomalia_etiquetada = True
+    else:
+        state.falsos_positivos += 1
+    state.score += scoring.pontos_anomalia(real)
+    _recompute_seiso(state)
+    _registrar(state, real)
+    if real:
+        return CommandOutcome(True, "comemora", "Anomalia etiquetada — você evitou uma falha futura!")
+    return CommandOutcome(False, "boasvindas", "Aqui não havia anomalia: limpeza ≠ etiqueta.")
+
+
+def _recompute_seiso(state: GameState) -> None:
+    corretos = sum(t.limpo and (t.anomalia is None or t.anomalia_etiquetada) for t in state.seiso)
+    _set_radar(state, Senso.SEISO, corretos, len(state.seiso))
+
+
+def _seiketsu(state: GameState, payload: dict[str, object]) -> CommandOutcome:
+    if not state.seiketsu_snapshot:
+        return CommandOutcome(None, "pergunta", "Tire o snapshot do padrão primeiro.")
+    spot = next(s for s in state.seiketsu if s.id == _s(payload, "spotId"))
+    marcou = _b(payload, "desvio")
+    spot.avaliado_como_desvio = marcou
+    correto = marcou == spot.desvio
+    if marcou and not spot.desvio:
+        state.falsos_positivos += 1
+    state.score += scoring.pontos_deteccao(marcou, spot.desvio)
+    corretos = sum(s.avaliado_como_desvio == s.desvio for s in state.seiketsu if s.avaliado_como_desvio is not None)
+    _set_radar(state, Senso.SEIKETSU, corretos, len(state.seiketsu))
+    _registrar(state, correto)
+    msg = "Desvio certo na mosca!" if correto else "Cuidado com falso positivo / desvio ignorado."
+    return CommandOutcome(correto, "comemora" if correto else "boasvindas", msg)
+
+
+def _shitsuke(state: GameState, payload: dict[str, object], now: float) -> CommandOutcome:
+    _decay(state, now)
+    item = next(i for i in state.shitsuke if i.id == _s(payload, "itemId"))
+    item.conforme = True
+    conformes = sum(i.conforme for i in state.shitsuke)
+    _set_radar(state, Senso.SHITSUKE, conformes, len(state.shitsuke))
+    for senso in PHASE_ORDER:
+        state.radar[senso] = min(100.0, state.radar[senso] + BUMP_SUSTENTACAO)
+    state.score += scoring.pontos_classificacao(True, state.streak)
+    _registrar(state, True)
+    return CommandOutcome(True, "aprova", "Auditoria corrigida — disciplina sustenta o 5S!")
+
+
+def _decay(state: GameState, now: float) -> None:
+    ativo = state.current_phase == Senso.SHITSUKE and not state.finished
+    state.radar, state.last_decay_at = aplicar_decay(state.radar, state.last_decay_at, now, ativo)
+
+
+def tick_decay(state: GameState, now: float) -> bool:
+    """Aplica o decaimento temporal (usado pelo push periódico do SSE).
+
+    Retorna True se a fase de sustentação está ativa (logo, vale empurrar)."""
+    ativo = state.current_phase == Senso.SHITSUKE and not state.finished
+    if ativo:
+        _decay(state, now)
+    return ativo
+
+
+def _desafio(state: GameState, payload: dict[str, object]) -> CommandOutcome:
+    if state.desafio is None:
+        raise UnknownCommand("nenhum desafio ativo")
+    escolha = Senso(_i(payload, "senso"))
+    correto = situacoes.is_correct(state.desafio.situacao_id, escolha)
+    state.desafio.resolvido = True
+    state.score += scoring.pontos_classificacao(correto, state.streak)
+    _registrar(state, correto)
+    certo = situacoes.senso_correto(state.desafio.situacao_id)
+    state.desafio = None
+    if correto:
+        return CommandOutcome(True, "comemora", "Acertou o senso! Streak crescendo. 🔥")
+    return CommandOutcome(False, "boasvindas", f"O senso certo era {certo.name} — por isso resolve essa situação.")
+
+
+def _talvez_desafio(state: GameState) -> None:
+    if state.desafio is None and state.acoes > 0 and state.acoes % ACOES_POR_DESAFIO == 0:
+        state.desafio = content.next_desafio(state.seed, state.acoes)
+
+
+def _avancar(state: GameState, now: float) -> CommandOutcome:
+    idx = PHASE_ORDER.index(state.current_phase)
+    if state.current_phase == Senso.SHITSUKE:
+        if score_5s(state) >= 60.0:
+            state.finished = True
+            _conceder_badges(state)
+            return CommandOutcome(True, "comemora", "Jornada concluída! Bem-vindo ao Hall 5S. 🏆")
+        return CommandOutcome(None, "pergunta", "Sustente o 5S Score acima de 60 para concluir.")
+    if state.radar[state.current_phase] < 70.0:
+        return CommandOutcome(None, "pergunta", "Atinja 70 no radar desta fase para liberar a próxima.")
+    state.current_phase = PHASE_ORDER[idx + 1]
+    state.last_decay_at = now
+    return CommandOutcome(True, "aprova", f"Fase liberada: {state.current_phase.name}!")
+
+
+def _conceder_badges(state: GameState) -> None:
+    if all(i.resolvido == i.destino for i in state.seiri):
+        state.badges.add("Zero Refugo")
+    if all(t.anomalia_etiquetada for t in state.seiso if t.anomalia is not None):
+        state.badges.add("Caçador de Anomalias")
+    if state.falsos_positivos == 0 and any(s.desvio for s in state.seiketsu):
+        state.badges.add("Olho de Águia")
+    if state.melhor_streak >= 10:
+        state.badges.add("Sequência Perfeita")
+    if all(v >= 90.0 for v in state.radar.values()):
+        state.badges.add("Mestre dos Sensos")

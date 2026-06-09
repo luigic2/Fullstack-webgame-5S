@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  background: radial-gradient(circle at 20% 0%, #1e5a99 0%, #123a66 45%, #0d2a4a 100%);
+  color: #0f172a;
+}
+
+/* Foco visível para acessibilidade por teclado. */
+:focus-visible {
+  outline: 3px solid #f47a20;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Modo daltônico: reforça com padrões/símbolos, sem depender só de cor. */
+.daltonico .senso-pattern {
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(0, 0, 0, 0.18) 0,
+    rgba(0, 0, 0, 0.18) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
