@@ -39,7 +39,7 @@ export function SeitonPhase({ itens }: Props): JSX.Element {
                 ) : (
                   <motion.div initial={{ scale: 0.6 }} animate={{ scale: 1 }} className="text-center">
                     <span className="text-4xl" aria-hidden="true">
-                      {ocupante.emoji}
+                      {certo ? ocupante.emoji : ''}
                     </span>
                     <span className="block text-lg">{certo ? '✅' : '↔️'}</span>
                   </motion.div>
