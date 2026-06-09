@@ -147,6 +147,47 @@ def test_seiso_decisao_errada_nao_pontua() -> None:
     assert state.score == base
 
 
+def test_seiketsu_snapshot_e_comparacao() -> None:
+    state = engine.new_game("s", seed=1, now=0.0)
+    # Antes do snapshot o gabarito de posição nunca vaza.
+    antes = public_view(state)["phases"]["SEIKETSU"]  # type: ignore[index]
+    assert "desvio" not in antes["referencia"][0]
+    for slot in antes["atual"]:
+        assert slot["acertou"] is None
+    # O snapshot embaralha exatamente 3 itens (3-ciclo) → 3 desvios / 3 conformes.
+    engine.apply(state, "seiketsu.snapshot", {}, 1.0)
+    desvios = [s for s in state.seiketsu if s.posicao_atual != s.posicao_correta]
+    assert len(desvios) == 3
+    # Avaliar cada item corretamente → +60 cada, radar 100, sem falso positivo.
+    for spot in state.seiketsu:
+        era_desvio = spot.posicao_atual != spot.posicao_correta
+        engine.apply(state, "seiketsu.avaliar", {"spotId": spot.id, "desvio": era_desvio}, 2.0)
+    assert state.score == 60 * len(state.seiketsu)
+    assert state.falsos_positivos == 0
+    assert state.radar[Senso.SEIKETSU] == 100.0
+    # A resposta pública nunca expõe a flag de gabarito por item.
+    depois = public_view(state)["phases"]["SEIKETSU"]  # type: ignore[index]
+    for slot in depois["atual"]:
+        assert "desvio" not in slot
+        assert slot["acertou"] is True
+
+
+def test_seiketsu_avaliacao_errada_nao_pontua() -> None:
+    state = engine.new_game("s", seed=1, now=0.0)
+    engine.apply(state, "seiketsu.snapshot", {}, 1.0)
+    conforme = next(s for s in state.seiketsu if s.posicao_atual == s.posicao_correta)
+    desvio = next(s for s in state.seiketsu if s.posicao_atual != s.posicao_correta)
+    # Marcar desvio num item conforme = falso positivo: 0 pontos (sem penalidade).
+    out = engine.apply(state, "seiketsu.avaliar", {"spotId": conforme.id, "desvio": True}, 2.0)
+    assert out.correto is False
+    assert state.score == 0
+    assert state.falsos_positivos == 1
+    # Marcar conforme num item que mudou de lugar = desvio ignorado: 0 pontos.
+    out2 = engine.apply(state, "seiketsu.avaliar", {"spotId": desvio.id, "desvio": False}, 3.0)
+    assert out2.correto is False
+    assert state.score == 0
+
+
 def test_score_5s_e_media_dos_eixos() -> None:
     state = engine.new_game("s", seed=1, now=0.0)
     state.radar = dict.fromkeys(PHASE_ORDER, 80.0)

@@ -39,16 +39,21 @@ export interface SeisoTile {
   acertou: boolean | null;
 }
 
-export interface SeiketsuSpot {
+export interface SeiketsuItem {
   id: string;
   nome: string;
   emoji: string;
+}
+
+export interface SeiketsuSlot extends SeiketsuItem {
   avaliado: boolean | null;
+  acertou: boolean | null;
 }
 
 export interface SeiketsuPhase {
   snapshot: boolean;
-  spots: SeiketsuSpot[];
+  referencia: SeiketsuItem[];
+  atual: SeiketsuSlot[];
 }
 
 export interface ShitsukeItem {

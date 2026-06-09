@@ -14,6 +14,7 @@ from .decay import aplicar_decay
 from .sensos import PHASE_ORDER, Senso
 from .state import (
     GameState,
+    SeiketsuSpot,
     SeiriZona,
     SeisoTile,
     score_5s,
@@ -96,8 +97,7 @@ def apply(state: GameState, ctype: str, payload: dict[str, object], now: float) 
     if ctype == "seiso.decidir":
         return _seiso_decidir(state, payload)
     if ctype == "seiketsu.snapshot":
-        state.seiketsu_snapshot = True
-        return CommandOutcome(None, "pergunta", "Padrão fotografado! Agora encontre os desvios.")
+        return _seiketsu_snapshot(state)
     if ctype == "seiketsu.avaliar":
         return _seiketsu(state, payload)
     if ctype == "shitsuke.corrigir":
@@ -182,20 +182,39 @@ def _recompute_seiso(state: GameState) -> None:
     _set_radar(state, Senso.SEISO, corretos, len(state.seiso))
 
 
+def _seiketsu_snapshot(state: GameState) -> CommandOutcome:
+    if not state.seiketsu_snapshot:
+        perm = content.shuffle_seiketsu(state.seed, len(state.seiketsu))
+        for spot in state.seiketsu:
+            spot.posicao_atual = perm[spot.posicao_correta]
+        state.seiketsu_snapshot = True
+    return CommandOutcome(None, "pergunta", "Padrão fotografado! Compare cada item com a foto: conforme ou desvio?")
+
+
+def _seiketsu_desvio(spot: SeiketsuSpot) -> bool:
+    return spot.posicao_atual is not None and spot.posicao_atual != spot.posicao_correta
+
+
 def _seiketsu(state: GameState, payload: dict[str, object]) -> CommandOutcome:
     if not state.seiketsu_snapshot:
         return CommandOutcome(None, "pergunta", "Tire o snapshot do padrão primeiro.")
     spot = next(s for s in state.seiketsu if s.id == _s(payload, "spotId"))
     marcou = _b(payload, "desvio")
     spot.avaliado_como_desvio = marcou
-    correto = marcou == spot.desvio
-    if marcou and not spot.desvio:
+    era_desvio = _seiketsu_desvio(spot)
+    correto = marcou == era_desvio
+    if marcou and not era_desvio:
         state.falsos_positivos += 1
-    state.score += scoring.pontos_deteccao(marcou, spot.desvio)
-    corretos = sum(s.avaliado_como_desvio == s.desvio for s in state.seiketsu if s.avaliado_como_desvio is not None)
+    if correto:
+        state.score += scoring.PONTOS_DECISAO  # decisão certa pontua; errada vale 0
+    corretos = sum(
+        s.avaliado_como_desvio == _seiketsu_desvio(s)
+        for s in state.seiketsu
+        if s.avaliado_como_desvio is not None
+    )
     _set_radar(state, Senso.SEIKETSU, corretos, len(state.seiketsu))
     _registrar(state, correto)
-    msg = "Desvio certo na mosca!" if correto else "Cuidado com falso positivo / desvio ignorado."
+    msg = "Posição certa na mosca!" if correto else "Olhe de novo: compare com a foto do padrão."
     return CommandOutcome(correto, "comemora" if correto else "boasvindas", msg)
 
 
@@ -267,7 +286,7 @@ def _conceder_badges(state: GameState) -> None:
         state.badges.add("Zero Refugo")
     if all(t.decisao == "registrar" for t in state.seiso if t.is_anomalia):
         state.badges.add("Caçador de Anomalias")
-    if state.falsos_positivos == 0 and any(s.desvio for s in state.seiketsu):
+    if state.falsos_positivos == 0 and any(_seiketsu_desvio(s) for s in state.seiketsu):
         state.badges.add("Olho de Águia")
     if state.melhor_streak >= 10:
         state.badges.add("Sequência Perfeita")

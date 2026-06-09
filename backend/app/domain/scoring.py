@@ -9,6 +9,7 @@ from __future__ import annotations
 PONTOS_ACERTO = 100
 PONTOS_ERRO = -20
 PONTOS_ANOMALIA = 60
+PONTOS_DECISAO = 60  # julgamento correto conforme/desvio (SEIKETSU); errado vale 0
 PONTOS_FALSO_POSITIVO = -40
 BONUS_STREAK_MAX = 50
 

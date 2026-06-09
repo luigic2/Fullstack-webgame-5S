@@ -134,7 +134,9 @@ def from_json(raw: str) -> GameState:
         ],
         seiketsu=[
             SeiketsuSpot(
-                id=_str(s, "id"), nome=_str(s, "nome"), emoji=_str(s, "emoji"), desvio=_bool(s, "desvio"),
+                id=_str(s, "id"), nome=_str(s, "nome"), emoji=_str(s, "emoji"),
+                posicao_correta=_int(s, "posicao_correta"),
+                posicao_atual=None if s.get("posicao_atual") is None else _int(s, "posicao_atual"),
                 avaliado_como_desvio=(
                     None if s.get("avaliado_como_desvio") is None else _bool(s, "avaliado_como_desvio")
                 ),

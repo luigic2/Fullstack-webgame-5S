@@ -108,12 +108,21 @@ def gen_seiso(seed: int) -> list[SeisoTile]:
 def gen_seiketsu(seed: int) -> list[SeiketsuSpot]:
     rng = _rng(seed, 4)
     escolhidos = rng.sample(_SEIKETSU_POOL, k=6)
-    # Após o snapshot, ~metade recebe um desvio sutil (gabarito).
-    com_desvio = set(rng.sample(range(len(escolhidos)), k=3))
+    # A ordem inicial é o padrão de referência; o embaralhamento vem no snapshot.
     return [
-        SeiketsuSpot(id=f"seiketsu-{i}", nome=n, emoji=e, desvio=(i in com_desvio))
+        SeiketsuSpot(id=f"seiketsu-{i}", nome=n, emoji=e, posicao_correta=i)
         for i, (n, e) in enumerate(escolhidos)
     ]
+
+
+def shuffle_seiketsu(seed: int, n: int) -> list[int]:
+    """Permutação determinística do snapshot: um 3-ciclo move exatamente 3 itens
+    (3 desvios / 3 conformes). `perm[i]` é o novo slot do item na posição `i`."""
+    rng = _rng(seed, 5)
+    perm = list(range(n))
+    a, b, c = rng.sample(range(n), k=3)
+    perm[a], perm[b], perm[c] = b, c, a
+    return perm
 
 
 def gen_shitsuke(seed: int) -> list[ShitsukeItem]:

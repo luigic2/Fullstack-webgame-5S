@@ -39,8 +39,8 @@ const INTROS: Partial<Record<number, IntroData>> = {
     pose: 'pergunta',
     mensagens: [
       'SEISO concluído! Bem-vindo ao SEIKETSU — Senso de Padronização.',
-      'Fotografe o padrão estabelecido e depois encontre os desvios que vou introduzir.',
-      'Cuidado com falsos positivos: marcar algo correto como desvio prejudica sua pontuação.',
+      'Fotografe o padrão para criar a referência. Depois os itens vão se embaralhar.',
+      'Compare cada item com a foto: marque conforme se está no lugar, desvio se mudou de posição.',
     ],
   },
   5: {

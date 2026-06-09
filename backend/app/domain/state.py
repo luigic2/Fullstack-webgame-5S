@@ -65,12 +65,14 @@ class SeisoTile:
 
 @dataclass
 class SeiketsuSpot:
-    """Ponto monitorado na fase SEIKETSU. `desvio` é gabarito."""
+    """Item da fase SEIKETSU. `posicao_correta` é a ordem do padrão; no snapshot
+    ganha `posicao_atual` (embaralhada). Desvio = posições diferem (gabarito)."""
 
     id: str
     nome: str
     emoji: str
-    desvio: bool
+    posicao_correta: int
+    posicao_atual: int | None = None
     avaliado_como_desvio: bool | None = None
 
 
@@ -205,14 +207,29 @@ def _public_phases(state: GameState) -> dict[str, object]:
         ],
         "SEIKETSU": {
             "snapshot": state.seiketsu_snapshot,
-            "spots": [
+            # ordem do padrão (a "foto"), renderizada na div de baixo após o snapshot
+            "referencia": [
+                {"id": s.id, "nome": s.nome, "emoji": s.emoji}
+                for s in sorted(state.seiketsu, key=lambda s: s.posicao_correta)
+            ],
+            # ordem exibida na div de cima; antes do snapshot = referência, depois = embaralhada.
+            # As posições são apresentação (o jogador compara visualmente); o gabarito não é exposto.
+            "atual": [
                 {
                     "id": s.id,
                     "nome": s.nome,
                     "emoji": s.emoji,
                     "avaliado": s.avaliado_como_desvio,
+                    "acertou": (
+                        (s.avaliado_como_desvio == (s.posicao_atual != s.posicao_correta))
+                        if s.avaliado_como_desvio is not None
+                        else None
+                    ),
                 }
-                for s in state.seiketsu
+                for s in sorted(
+                    state.seiketsu,
+                    key=lambda s: s.posicao_atual if s.posicao_atual is not None else s.posicao_correta,
+                )
             ],
         },
         "SHITSUKE": [
