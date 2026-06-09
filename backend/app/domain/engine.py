@@ -154,7 +154,8 @@ def _seiso_etiquetar(state: GameState, payload: dict[str, object]) -> CommandOut
         tile.anomalia_etiquetada = True
     else:
         state.falsos_positivos += 1
-    state.score += scoring.pontos_anomalia(real)
+        state.score -= scoring.pontos_anomalia(real)
+    state.score += scoring.pontos_anomalia(real) * 3
     _recompute_seiso(state)
     _registrar(state, real)
     if real:
