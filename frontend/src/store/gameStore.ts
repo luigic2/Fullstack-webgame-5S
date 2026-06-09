@@ -3,7 +3,7 @@
 import { create } from 'zustand'
 import { createSession, newCommandId, sendCommand } from '../api/client'
 import type { CommandError } from '../api/client'
-import type { GameState, MentorMood } from '../types'
+import type { CommandFeedback, GameState, MentorMood } from '../types'
 
 interface MentorState {
   mood: MentorMood
@@ -19,7 +19,7 @@ interface GameStore {
   daltonico: boolean
   onboarding: boolean
   start: () => Promise<void>
-  dispatch: (type: string, payload?: Record<string, unknown>) => Promise<void>
+  dispatch: (type: string, payload?: Record<string, unknown>) => Promise<CommandFeedback | null>
   applyStreamState: (state: GameState) => void
   setMentor: (mood: MentorMood, mensagem: string) => void
   toggleDaltonico: () => void
@@ -56,7 +56,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   dispatch: async (type, payload = {}) => {
     const token = get().token
-    if (token === null) return
+    if (token === null) return null
     try {
       const resp = await sendCommand(token, newCommandId(), type, payload)
       set({
@@ -64,6 +64,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
         mentor: { mood: resp.feedback.mentor, mensagem: resp.feedback.mensagem },
         error: null,
       })
+      return resp.feedback
     } catch (e) {
       const err = e as CommandError
       if (err.status === 422) {
@@ -74,6 +75,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       } else {
         set({ error: err.detail ?? 'Erro ao enviar comando.' })
       }
+      return null
     }
   },
 

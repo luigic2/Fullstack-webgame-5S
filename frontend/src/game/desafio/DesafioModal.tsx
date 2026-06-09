@@ -9,6 +9,7 @@ import { SENSO_COR, SENSO_NOME, SENSO_SIMBOLO } from '../sensoInfo'
 
 interface Props {
   desafio: Desafio
+  onAcerto?: () => void
 }
 
 const SENSO_ID: Record<SensoKey, number> = {
@@ -19,10 +20,12 @@ const SENSO_ID: Record<SensoKey, number> = {
   SHITSUKE: 5,
 }
 
-export function DesafioModal({ desafio }: Props): JSX.Element {
+export function DesafioModal({ desafio, onAcerto }: Props): JSX.Element {
   const dispatch = useGameStore((s) => s.dispatch)
   const responder = (senso: number): void => {
-    void dispatch('desafio.classificar', { senso })
+    void dispatch('desafio.classificar', { senso }).then((feedback) => {
+      if (feedback?.correto === true) onAcerto?.()
+    })
   }
 
   return (

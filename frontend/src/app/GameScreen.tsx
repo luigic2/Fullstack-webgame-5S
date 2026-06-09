@@ -10,6 +10,7 @@ import { SENSO_NOME, sensoFromPhase } from '../game/sensoInfo'
 import { useGameStore } from '../store/gameStore'
 import type { GameState } from '../types'
 import { Button } from '../ui/Button'
+import { Confetti } from '../ui/Confetti'
 import { Onboarding } from './Onboarding'
 
 interface Props {
@@ -27,6 +28,7 @@ export function GameScreen({ state }: Props): JSX.Element {
 
   const [introPhase, setIntroPhase] = useState<number | null>(null)
   const prevPhase = useRef<number | null>(null)
+  const [confetti, setConfetti] = useState(false)
 
   useEffect(() => {
     if (state.currentPhase !== prevPhase.current) {
@@ -78,8 +80,12 @@ export function GameScreen({ state }: Props): JSX.Element {
         </div>
       </div>
 
+      <Confetti ativo={confetti} onDone={() => setConfetti(false)} />
+
       <AnimatePresence>
-        {state.desafio !== null && !state.desafio.resolvido && <DesafioModal desafio={state.desafio} />}
+        {state.desafio !== null && !state.desafio.resolvido && (
+          <DesafioModal desafio={state.desafio} onAcerto={() => setConfetti(true)} />
+        )}
       </AnimatePresence>
       <AnimatePresence>{onboarding && <Onboarding />}</AnimatePresence>
 
@@ -88,7 +94,10 @@ export function GameScreen({ state }: Props): JSX.Element {
           <PhaseIntroOverlay
             key={introPhase}
             phase={introPhase}
-            onDone={() => setIntroPhase(null)}
+            onDone={() => {
+              setIntroPhase(null)
+              if (introPhase === 5) void dispatch('shitsuke.iniciar')
+            }}
           />
         )}
       </AnimatePresence>
