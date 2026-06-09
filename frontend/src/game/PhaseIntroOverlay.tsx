@@ -14,7 +14,7 @@ const INTROS: Partial<Record<number, IntroData>> = {
   1: {
     pose: 'boasvindas',
     mensagens: [
-      'Bem-vindo ao chão de fábrica! Sou o Mestre 5S, seu guia nessa jornada para dominar a metodologia 5S, vamos transformar esse ambiente de trabalho!.',
+      'Bem-vindo ao chão de fábrica! Sou o Mestre 5S, seu guia nessa jornada para dominar a metodologia 5S, vamos transformar esse ambiente de trabalho juntos!',
       'O Primeiro Pilar da metodologia 5S é a SEIRI. ela se baseia na ideia da separação de tudo que é necessario daquilo que não é',
       'Itens desnecessários criam obstáculos e escondem problemas. Separe cada item da bancada entre: Manter, Etiqueta Vermelha ou Descartar. Foque no essencial!',
     ],

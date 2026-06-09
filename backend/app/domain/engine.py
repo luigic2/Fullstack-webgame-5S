@@ -142,14 +142,14 @@ def _seiso_limpar(state: GameState, payload: dict[str, object]) -> CommandOutcom
     tile = next(t for t in state.seiso if t.id == _s(payload, "tileId"))
     tile.limpo = True
     _recompute_seiso(state)
-    if tile.anomalia is not None:
+    if tile.anomalia is not None and tile.is_anomalia:
         return CommandOutcome(True, "pergunta", f"Olha só: {tile.anomalia}. Etiquete a anomalia!")
     return CommandOutcome(True, "aprova", "Limpo! Superfície inspecionada, nada escondido aqui.")
 
 
 def _seiso_etiquetar(state: GameState, payload: dict[str, object]) -> CommandOutcome:
     tile = next(t for t in state.seiso if t.id == _s(payload, "tileId"))
-    real = tile.anomalia is not None and tile.limpo
+    real = tile.anomalia is not None and tile.is_anomalia and tile.limpo
     if real:
         tile.anomalia_etiquetada = True
     else:

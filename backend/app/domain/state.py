@@ -57,6 +57,7 @@ class SeisoTile:
     nome: str
     emoji: str
     anomalia: str | None
+    is_anomalia: bool
     limpo: bool = False
     anomalia_etiquetada: bool = False
 
