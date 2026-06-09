@@ -121,7 +121,6 @@ class GameState:
     acoes: int = 0
     falsos_positivos: int = 0
     # Desafio de sustentação da fase SHITSUKE (cronômetro + choques periódicos).
-    shitsuke_iniciado: bool = False  # False até o jogador dispensar o overlay de intro
     shitsuke_last_shock_at: float = 0.0
     shitsuke_choques: int = 0
     shitsuke_sustain_since: float | None = None
@@ -182,7 +181,6 @@ def public_view(state: GameState) -> dict[str, object]:
         "desafio": _public_desafio(state),
         "shitsukeDesafio": {
             "ativo": state.current_phase == Senso.SHITSUKE and not state.finished and not state.shitsuke_sustentado,
-            "iniciado": state.shitsuke_iniciado,
             "sustentado": state.shitsuke_sustentado,
             "metaMedia": int(META_SUSTENTACAO),
             "restanteSeg": round(state.shitsuke_restante, 1),

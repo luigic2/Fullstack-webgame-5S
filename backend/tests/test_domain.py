@@ -194,7 +194,6 @@ def _entrar_shitsuke(seed: int) -> engine.GameState:
     state.radar = dict.fromkeys(PHASE_ORDER, 100.0)
     state.last_decay_at = 0.0
     state.shitsuke_last_shock_at = 0.0
-    state.shitsuke_iniciado = True  # simula o jogador ter dispensado o overlay
     return state
 
 

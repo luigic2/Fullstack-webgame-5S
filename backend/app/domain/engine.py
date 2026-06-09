@@ -107,8 +107,6 @@ def apply(state: GameState, ctype: str, payload: dict[str, object], now: float) 
         return _seiketsu_snapshot(state)
     if ctype == "seiketsu.avaliar":
         return _seiketsu(state, payload)
-    if ctype == "shitsuke.iniciar":
-        return _shitsuke_iniciar(state, now)
     if ctype == "shitsuke.corrigir":
         return _shitsuke(state, payload, now)
     if ctype == "shitsuke.tick":
@@ -241,28 +239,12 @@ def _shitsuke(state: GameState, payload: dict[str, object], now: float) -> Comma
     return CommandOutcome(True, "aprova", "Auditoria corrigida — disciplina sustenta o 5S!")
 
 
-def _shitsuke_iniciar(state: GameState, now: float) -> CommandOutcome:
-    """Dispara o desafio de sustentação após o jogador dispensar o overlay de intro."""
-    if not state.shitsuke_iniciado:
-        state.shitsuke_iniciado = True
-        state.shitsuke_last_shock_at = now
-        state.last_decay_at = now
-    return CommandOutcome(None, "comemora", "Desafio iniciado — sustente o padrão por 30s!")
-
-
 def _processar_shitsuke(state: GameState, now: float) -> None:
     """Decaimento contínuo + choques discretos (5s) + cronômetro de sustentação.
 
     Tudo derivado de `now - last_*` (timestamp+delta): minimizar a aba e voltar
-    aplica de uma vez os choques e o decaimento do período ausente.
-    Enquanto `shitsuke_iniciado` é False (overlay ainda visível), apenas avança
-    os timestamps de referência para o desafio começar limpo."""
-    if (
-        state.current_phase != Senso.SHITSUKE
-        or state.finished
-        or state.shitsuke_sustentado
-        or not state.shitsuke_iniciado
-    ):
+    aplica de uma vez os choques e o decaimento do período ausente."""
+    if state.current_phase != Senso.SHITSUKE or state.finished or state.shitsuke_sustentado:
         state.last_decay_at = now
         state.shitsuke_last_shock_at = now
         return
@@ -339,7 +321,6 @@ def _avancar(state: GameState, now: float) -> CommandOutcome:
     state.current_phase = PHASE_ORDER[idx + 1]
     state.last_decay_at = now
     if state.current_phase == Senso.SHITSUKE:
-        state.shitsuke_iniciado = False
         state.shitsuke_last_shock_at = now
         state.shitsuke_choques = 0
         state.shitsuke_sustain_since = None
