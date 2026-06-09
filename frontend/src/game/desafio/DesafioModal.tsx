@@ -56,7 +56,7 @@ export function DesafioModal({ desafio }: Props): JSX.Element {
             <button
               key={k}
               data-zone={String(SENSO_ID[k])}
-              onClick={() => responder(SENSO_ID[k])}
+              // onClick={() => responder(SENSO_ID[k])}
               className="flex flex-col items-center rounded-xl border-2 border-dashed border-white/30 px-2 py-3 text-center transition hover:border-white hover:bg-white/10"
               style={{ boxShadow: `inset 0 -3px 0 ${SENSO_COR[k]}` }}
               aria-label={`Classificar como ${SENSO_NOME[k]}`}
