@@ -10,7 +10,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from . import content, scoring, situacoes
-from .decay import aplicar_decay
+from .decay import (
+    DURACAO_DESAFIO,
+    FATOR_CHOQUE,
+    INTERVALO_CHOQUE,
+    META_SUSTENTACAO,
+    aplicar_decay,
+    setores_do_choque,
+)
 from .sensos import PHASE_ORDER, Senso
 from .state import (
     GameState,
@@ -103,7 +110,7 @@ def apply(state: GameState, ctype: str, payload: dict[str, object], now: float) 
     if ctype == "shitsuke.corrigir":
         return _shitsuke(state, payload, now)
     if ctype == "shitsuke.tick":
-        _decay(state, now)
+        _processar_shitsuke(state, now)
         return CommandOutcome(None, "pergunta", "A entropia avança — sustente o padrão!")
     if ctype == "desafio.classificar":
         return _desafio(state, payload)
@@ -219,7 +226,7 @@ def _seiketsu(state: GameState, payload: dict[str, object]) -> CommandOutcome:
 
 
 def _shitsuke(state: GameState, payload: dict[str, object], now: float) -> CommandOutcome:
-    _decay(state, now)
+    _processar_shitsuke(state, now)
     item = next(i for i in state.shitsuke if i.id == _s(payload, "itemId"))
     item.conforme = True
     conformes = sum(i.conforme for i in state.shitsuke)
@@ -228,21 +235,53 @@ def _shitsuke(state: GameState, payload: dict[str, object], now: float) -> Comma
         state.radar[senso] = min(100.0, state.radar[senso] + BUMP_SUSTENTACAO)
     state.score += scoring.pontos_classificacao(True, state.streak)
     _registrar(state, True)
+    _avaliar_sustentacao(state, now)  # o bump pode reerguer a média acima da meta
     return CommandOutcome(True, "aprova", "Auditoria corrigida — disciplina sustenta o 5S!")
 
 
-def _decay(state: GameState, now: float) -> None:
-    ativo = state.current_phase == Senso.SHITSUKE and not state.finished
-    state.radar, state.last_decay_at = aplicar_decay(state.radar, state.last_decay_at, now, ativo)
+def _processar_shitsuke(state: GameState, now: float) -> None:
+    """Decaimento contínuo + choques discretos (5s) + cronômetro de sustentação.
+
+    Tudo derivado de `now - last_*` (timestamp+delta): minimizar a aba e voltar
+    aplica de uma vez os choques e o decaimento do período ausente."""
+    if state.current_phase != Senso.SHITSUKE or state.finished or state.shitsuke_sustentado:
+        state.last_decay_at = now
+        state.shitsuke_last_shock_at = now
+        return
+    state.radar, state.last_decay_at = aplicar_decay(state.radar, state.last_decay_at, now, ativo=True)
+    while now - state.shitsuke_last_shock_at >= INTERVALO_CHOQUE:
+        a, b = setores_do_choque(state.seed, state.shitsuke_choques)
+        state.radar[a] = max(0.0, state.radar[a] * FATOR_CHOQUE)
+        state.radar[b] = max(0.0, state.radar[b] * FATOR_CHOQUE)
+        state.shitsuke_choques += 1
+        state.shitsuke_last_shock_at += INTERVALO_CHOQUE
+    _avaliar_sustentacao(state, now)
+
+
+def _avaliar_sustentacao(state: GameState, now: float) -> None:
+    """Atualiza o cronômetro: sustentar a média ≥ meta por DURACAO segundos contínuos."""
+    if score_5s(state) >= META_SUSTENTACAO:
+        if state.shitsuke_sustain_since is None:
+            state.shitsuke_sustain_since = now
+        elif now - state.shitsuke_sustain_since >= DURACAO_DESAFIO:
+            state.shitsuke_sustentado = True
+    else:
+        state.shitsuke_sustain_since = None  # caiu abaixo da meta → reseta o cronômetro
+    if state.shitsuke_sustentado:
+        state.shitsuke_restante = 0.0
+    elif state.shitsuke_sustain_since is None:
+        state.shitsuke_restante = DURACAO_DESAFIO
+    else:
+        state.shitsuke_restante = max(0.0, DURACAO_DESAFIO - (now - state.shitsuke_sustain_since))
 
 
 def tick_decay(state: GameState, now: float) -> bool:
-    """Aplica o decaimento temporal (usado pelo push periódico do SSE).
+    """Avança o desafio de sustentação (usado pelo push periódico do SSE).
 
-    Retorna True se a fase de sustentação está ativa (logo, vale empurrar)."""
+    Retorna True enquanto a fase SHITSUKE está em curso (logo, vale empurrar)."""
     ativo = state.current_phase == Senso.SHITSUKE and not state.finished
     if ativo:
-        _decay(state, now)
+        _processar_shitsuke(state, now)
     return ativo
 
 
@@ -269,15 +308,24 @@ def _talvez_desafio(state: GameState) -> None:
 def _avancar(state: GameState, now: float) -> CommandOutcome:
     idx = PHASE_ORDER.index(state.current_phase)
     if state.current_phase == Senso.SHITSUKE:
-        if score_5s(state) >= 60.0:
+        _processar_shitsuke(state, now)
+        if state.shitsuke_sustentado:
             state.finished = True
             _conceder_badges(state)
-            return CommandOutcome(True, "comemora", "Jornada concluída! Bem-vindo ao Hall 5S. 🏆")
-        return CommandOutcome(None, "pergunta", "Sustente o 5S Score acima de 60 para concluir.")
+            return CommandOutcome(True, "comemora", "Jornada concluída! 5S sustentado sob pressão. 🏆")
+        return CommandOutcome(
+            None, "pergunta", "Sustente a média ≥50% até o cronômetro zerar para concluir."
+        )
     if state.radar[state.current_phase] < 70.0:
         return CommandOutcome(None, "pergunta", "Atinja 70 no radar desta fase para liberar a próxima.")
     state.current_phase = PHASE_ORDER[idx + 1]
     state.last_decay_at = now
+    if state.current_phase == Senso.SHITSUKE:
+        state.shitsuke_last_shock_at = now
+        state.shitsuke_choques = 0
+        state.shitsuke_sustain_since = None
+        state.shitsuke_sustentado = False
+        state.shitsuke_restante = DURACAO_DESAFIO
     return CommandOutcome(True, "aprova", f"Fase liberada: {state.current_phase.name}!")
 
 

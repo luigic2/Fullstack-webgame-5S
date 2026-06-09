@@ -47,8 +47,8 @@ const INTROS: Partial<Record<number, IntroData>> = {
     pose: 'comemora',
     mensagens: [
       'Chegamos ao SHITSUKE — o Senso de Disciplina. A fase mais desafiadora!',
-      'A entropia nunca para: seu radar vai decaindo com o tempo.',
-      'Audite, corrija as inconformidades e sustente o padrão. Mantenha o 5S Score acima de 60!',
+      'A entropia não para: o radar decai e, a cada 5s, um choque derruba 2 setores em 20%.',
+      'Audite sem parar e mantenha a média ≥ 50% por 30 segundos contínuos para concluir a jornada!',
     ],
   },
 }

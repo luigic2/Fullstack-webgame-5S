@@ -6,7 +6,7 @@ from __future__ import annotations
 import pytest
 
 from app.domain import engine, situacoes
-from app.domain.decay import DECAY_POR_SEGUNDO, aplicar_decay
+from app.domain.decay import DECAY_POR_SEGUNDO, DURACAO_DESAFIO, FATOR_CHOQUE, aplicar_decay, setores_do_choque
 from app.domain.plausibility import ImplausibleError, checar_cadencia
 from app.domain.scoring import PONTOS_ERRO, pontos_classificacao, pontos_deteccao
 from app.domain.sensos import PHASE_ORDER, Senso
@@ -186,6 +186,46 @@ def test_seiketsu_avaliacao_errada_nao_pontua() -> None:
     out2 = engine.apply(state, "seiketsu.avaliar", {"spotId": desvio.id, "desvio": False}, 3.0)
     assert out2.correto is False
     assert state.score == 0
+
+
+def _entrar_shitsuke(seed: int) -> engine.GameState:
+    state = engine.new_game("s", seed=seed, now=0.0)
+    state.current_phase = Senso.SHITSUKE
+    state.radar = dict.fromkeys(PHASE_ORDER, 100.0)
+    state.last_decay_at = 0.0
+    state.shitsuke_last_shock_at = 0.0
+    return state
+
+
+def test_shitsuke_choque_atinge_dois_setores() -> None:
+    state = _entrar_shitsuke(seed=1)
+    engine.apply(state, "shitsuke.tick", {}, now=6.0)
+    assert state.shitsuke_choques == 1
+    a, b = setores_do_choque(1, 0)
+    base = 100.0 - 6.0 * DECAY_POR_SEGUNDO  # decaimento aplicado antes do choque
+    assert state.radar[a] == pytest.approx(base * FATOR_CHOQUE)
+    assert state.radar[b] == pytest.approx(base * FATOR_CHOQUE)
+    intacto = next(s for s in PHASE_ORDER if s not in (a, b))
+    assert state.radar[intacto] == pytest.approx(base)
+
+
+def test_shitsuke_sustentacao_libera_conclusao() -> None:
+    state = _entrar_shitsuke(seed=1)
+    engine.apply(state, "shitsuke.tick", {}, now=1.0)
+    assert state.shitsuke_sustain_since == 1.0
+    # Média despenca abaixo da meta → cronômetro reseta.
+    state.radar = dict.fromkeys(PHASE_ORDER, 40.0)
+    engine.apply(state, "shitsuke.tick", {}, now=2.0)
+    assert state.shitsuke_sustain_since is None
+    assert state.shitsuke_restante == DURACAO_DESAFIO
+    # Recupera e sustenta ≥ meta por 30s contínuos (auditoria perfeita) → conclui.
+    for t in range(3, 34):
+        state.radar = dict.fromkeys(PHASE_ORDER, 100.0)
+        engine.apply(state, "shitsuke.tick", {}, now=float(t))
+    assert state.shitsuke_sustentado is True
+    out = engine.apply(state, "fase.avancar", {}, now=34.0)
+    assert out.correto is True
+    assert state.finished is True
 
 
 def test_score_5s_e_media_dos_eixos() -> None:

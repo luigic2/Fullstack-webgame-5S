@@ -10,6 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import StrEnum
 
+from .decay import DURACAO_DESAFIO, META_SUSTENTACAO
 from .sensos import PHASE_ORDER, Senso, senso_metadata
 
 # Patamar (0..100) que uma fase precisa atingir no radar para liberar a próxima.
@@ -119,6 +120,12 @@ class GameState:
     badges: set[str] = field(default_factory=set)
     acoes: int = 0
     falsos_positivos: int = 0
+    # Desafio de sustentação da fase SHITSUKE (cronômetro + choques periódicos).
+    shitsuke_last_shock_at: float = 0.0
+    shitsuke_choques: int = 0
+    shitsuke_sustain_since: float | None = None
+    shitsuke_sustentado: bool = False
+    shitsuke_restante: float = DURACAO_DESAFIO
 
     def phase_unlocked(self, senso: Senso) -> bool:
         """Uma fase está liberada se todas as anteriores passaram do patamar."""
@@ -172,6 +179,13 @@ def public_view(state: GameState) -> dict[str, object]:
         "badges": sorted(state.badges),
         "phases": _public_phases(state),
         "desafio": _public_desafio(state),
+        "shitsukeDesafio": {
+            "ativo": state.current_phase == Senso.SHITSUKE and not state.finished and not state.shitsuke_sustentado,
+            "sustentado": state.shitsuke_sustentado,
+            "metaMedia": int(META_SUSTENTACAO),
+            "restanteSeg": round(state.shitsuke_restante, 1),
+            "duracaoSeg": int(DURACAO_DESAFIO),
+        },
     }
 
 

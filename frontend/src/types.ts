@@ -77,6 +77,14 @@ export interface Desafio {
   resolvido: boolean;
 }
 
+export interface ShitsukeDesafio {
+  ativo: boolean;
+  sustentado: boolean;
+  metaMedia: number;
+  restanteSeg: number;
+  duracaoSeg: number;
+}
+
 export interface GameState {
   sessionId: string;
   currentPhase: number;
@@ -93,6 +101,7 @@ export interface GameState {
   badges: string[];
   phases: Phases;
   desafio: Desafio | null;
+  shitsukeDesafio: ShitsukeDesafio;
 }
 
 export interface CommandFeedback {

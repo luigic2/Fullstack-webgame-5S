@@ -23,6 +23,7 @@ export function GameScreen({ state }: Props): JSX.Element {
   const onboarding = useGameStore((s) => s.onboarding)
   const senso = sensoFromPhase(state.currentPhase)
   const ultimaFase = state.currentPhase === 5
+  const concluirBloqueado = ultimaFase && !state.shitsukeDesafio.sustentado
 
   const [introPhase, setIntroPhase] = useState<number | null>(null)
   const prevPhase = useRef<number | null>(null)
@@ -49,7 +50,7 @@ export function GameScreen({ state }: Props): JSX.Element {
 
       <div className="grid gap-5 lg:grid-cols-[300px_1fr]">
         <aside className="space-y-4">
-          <div className="flex justify-center rounded-2xl bg-white/5 p-3">
+          <div className="flex justify-center rounded-2xl bg-white/5 p-3" style={{ backgroundColor: '#ffffff2e' }}>
             <Radar radar={state.radar} />
           </div>
           <Hud state={state} />
@@ -64,7 +65,7 @@ export function GameScreen({ state }: Props): JSX.Element {
           </div>
           <PhaseRouter state={state} />
           <div className="flex justify-end">
-            <Button onClick={() => void dispatch('fase.avancar')}>
+            <Button onClick={() => void dispatch('fase.avancar')} disabled={concluirBloqueado}>
               {ultimaFase ? '🏆 Concluir jornada' : '➡ Avançar fase'}
             </Button>
           </div>
