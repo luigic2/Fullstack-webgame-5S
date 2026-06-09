@@ -2,7 +2,7 @@
 // dá snap de volta à origem e detecta a zona de soltura via elementFromPoint.
 // Acessível: também aceita seleção por teclado/botão (ver onDrop nas fases).
 import { motion } from 'framer-motion'
-import type { ReactNode } from 'react'
+import { useRef, type ReactNode } from 'react'
 
 interface Props {
   children: ReactNode
@@ -18,8 +18,11 @@ function clientCoords(e: MouseEvent | TouchEvent | PointerEvent): { x: number; y
 }
 
 export function Draggable({ children, onDrop, ariaLabel, disabled = false }: Props): JSX.Element {
+  const ref = useRef<HTMLDivElement>(null)
+
   return (
     <motion.div
+      ref={ref}
       role="button"
       tabIndex={0}
       aria-label={ariaLabel}
@@ -31,7 +34,11 @@ export function Draggable({ children, onDrop, ariaLabel, disabled = false }: Pro
       onDragEnd={(event) => {
         const c = clientCoords(event)
         if (c === null) return
+        // Desativa pointer-events temporariamente para que elementFromPoint
+        // atravesse o elemento arrastado e detecte a DropZone abaixo dele.
+        if (ref.current) ref.current.style.pointerEvents = 'none'
         const alvo = document.elementFromPoint(c.x, c.y)
+        if (ref.current) ref.current.style.pointerEvents = ''
         const zona = alvo?.closest('[data-zone]')
         const zoneId = zona?.getAttribute('data-zone')
         if (zoneId !== null && zoneId !== undefined) onDrop(zoneId)
