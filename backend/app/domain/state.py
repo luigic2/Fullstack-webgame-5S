@@ -194,9 +194,9 @@ def _public_phases(state: GameState) -> dict[str, object]:
                 "nome": t.nome,
                 "emoji": t.emoji,
                 "limpo": t.limpo,
-                # revela a EXISTÊNCIA de anomalia só após limpar (não o gabarito antecipado)
-                "is_anomalia": (t.anomalia is not None) if t.limpo else None,
-                "anomalia": t.anomalia if (t.limpo and t.anomalia is not None) else None,
+                # revela se há anomalia real só após limpar (não antecipa o gabarito)
+                "is_anomalia": t.is_anomalia if t.limpo else None,
+                "anomalia": t.anomalia if (t.limpo and t.is_anomalia) else None,
                 "etiquetada": t.anomalia_etiquetada,
             }
             for t in state.seiso

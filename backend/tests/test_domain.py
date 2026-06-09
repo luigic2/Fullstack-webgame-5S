@@ -10,7 +10,7 @@ from app.domain.decay import DECAY_POR_SEGUNDO, aplicar_decay
 from app.domain.plausibility import ImplausibleError, checar_cadencia
 from app.domain.scoring import PONTOS_ERRO, pontos_classificacao, pontos_deteccao
 from app.domain.sensos import PHASE_ORDER, Senso
-from app.domain.state import SeiriZona, score_5s
+from app.domain.state import SeiriZona, public_view, score_5s
 
 
 def test_banco_tem_100_situacoes() -> None:
@@ -106,6 +106,34 @@ def test_desafio_do_mestre_valida_no_servidor() -> None:
     out = engine.apply(state, "desafio.classificar", {"senso": int(correto)}, 2.0)
     assert out.correto is True
     assert state.desafio is None
+
+
+def test_seiso_score_maximo_play_perfeito() -> None:
+    state = engine.new_game("s", seed=1, now=0.0)
+    # Avançar até a fase SEISO
+    for item in state.seiri:
+        engine.apply(state, "seiri.classificar", {"itemId": item.id, "zona": item.destino.value}, 1.0)
+    engine.apply(state, "fase.avancar", {}, now=2.0)
+    for item in state.seiton:
+        engine.apply(state, "seiton.encaixar", {"itemId": item.id, "slot": item.slot}, 3.0)
+    engine.apply(state, "fase.avancar", {}, now=4.0)
+    # Limpar todos os tiles: cada limpeza vale PONTOS_ACERTO (100)
+    score_antes = state.score
+    for tile in state.seiso:
+        engine.apply(state, "seiso.limpar", {"tileId": tile.id}, 5.0)
+    assert state.score == score_antes + 100 * len(state.seiso)
+    # public_view expõe is_anomalia corretamente por tile
+    view = public_view(state)
+    for tv in view["phases"]["SEISO"]:
+        tile = next(t for t in state.seiso if t.id == tv["id"])
+        assert tv["is_anomalia"] == tile.is_anomalia
+    # Etiquetar só as anomalias reais → +60 cada, sem penalidade
+    score_apos_limpeza = state.score
+    anomalias_reais = [t for t in state.seiso if t.is_anomalia]
+    for tile in anomalias_reais:
+        engine.apply(state, "seiso.etiquetar", {"tileId": tile.id}, 6.0)
+    assert state.score == score_apos_limpeza + 60 * len(anomalias_reais)
+    assert state.falsos_positivos == 0
 
 
 def test_score_5s_e_media_dos_eixos() -> None:

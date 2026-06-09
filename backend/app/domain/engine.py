@@ -141,6 +141,7 @@ def _seiton(state: GameState, payload: dict[str, object]) -> CommandOutcome:
 def _seiso_limpar(state: GameState, payload: dict[str, object]) -> CommandOutcome:
     tile = next(t for t in state.seiso if t.id == _s(payload, "tileId"))
     tile.limpo = True
+    state.score += scoring.PONTOS_ACERTO
     _recompute_seiso(state)
     if tile.anomalia is not None and tile.is_anomalia:
         return CommandOutcome(True, "pergunta", f"Olha só: {tile.anomalia}. Etiquete a anomalia!")
@@ -154,8 +155,7 @@ def _seiso_etiquetar(state: GameState, payload: dict[str, object]) -> CommandOut
         tile.anomalia_etiquetada = True
     else:
         state.falsos_positivos += 1
-        state.score -= scoring.pontos_anomalia(real)
-    state.score += scoring.pontos_anomalia(real) * 3
+    state.score += scoring.pontos_anomalia(real)
     _recompute_seiso(state)
     _registrar(state, real)
     if real:

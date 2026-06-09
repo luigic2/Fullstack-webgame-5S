@@ -57,7 +57,7 @@ function Tile({ tile, onLimpar, onEtiquetar }: TileProps): JSX.Element {
         )}
       </AnimatePresence>
 
-      {tile.limpo && !tile.etiquetada && (
+      {tile.limpo && !tile.etiquetada && tile.is_anomalia !== false && (
         <motion.button
           initial={{ scale: 0.7 }}
           animate={{ scale: 1 }}
