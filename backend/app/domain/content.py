@@ -98,8 +98,8 @@ def gen_seiso(seed: int) -> list[SeisoTile]:
     rng = _rng(seed, 3)
     escolhidos = rng.sample(_SEISO_POOL, k=5)
     return [
-        SeisoTile(id=f"seiso-{i}", nome=n, emoji=e, anomalia=a, is_anomalia=l)
-        for i, (n, e, a, l) in enumerate(escolhidos)
+        SeisoTile(id=f"seiso-{i}", nome=n, emoji=e, anomalia=a, is_anomalia=li)
+        for i, (n, e, a, li) in enumerate(escolhidos)
     ]
 
 
