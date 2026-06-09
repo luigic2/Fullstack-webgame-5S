@@ -57,7 +57,7 @@ function Tile({ tile, onLimpar, onEtiquetar }: TileProps): JSX.Element {
         )}
       </AnimatePresence>
 
-      {tile.limpo && tile.temAnomalia === true && !tile.etiquetada && (
+      {tile.limpo && tile.is_anomalia === true && !tile.etiquetada && (
         <motion.button
           initial={{ scale: 0.7 }}
           animate={{ scale: 1 }}
@@ -69,7 +69,7 @@ function Tile({ tile, onLimpar, onEtiquetar }: TileProps): JSX.Element {
         </motion.button>
       )}
       {tile.etiquetada && <p className="mt-2 text-xs font-bold text-senso-seiso">✅ Anomalia registrada</p>}
-      {tile.limpo && tile.temAnomalia === false && (
+      {tile.limpo && tile.is_anomalia === false && (
         <p className="mt-2 text-xs font-semibold text-white/50">Limpo, sem anomalias</p>
       )}
     </div>
