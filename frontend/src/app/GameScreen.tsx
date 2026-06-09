@@ -1,5 +1,7 @@
 import { AnimatePresence } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
 import { Hud } from '../game/Hud'
+import { PhaseIntroOverlay } from '../game/PhaseIntroOverlay'
 import { DesafioModal } from '../game/desafio/DesafioModal'
 import { Mentor } from '../game/mentor/Mentor'
 import { PhaseRouter } from '../game/phases/PhaseRouter'
@@ -21,6 +23,16 @@ export function GameScreen({ state }: Props): JSX.Element {
   const onboarding = useGameStore((s) => s.onboarding)
   const senso = sensoFromPhase(state.currentPhase)
   const ultimaFase = state.currentPhase === 5
+
+  const [introPhase, setIntroPhase] = useState<number | null>(null)
+  const prevPhase = useRef<number | null>(null)
+
+  useEffect(() => {
+    if (state.currentPhase !== prevPhase.current) {
+      prevPhase.current = state.currentPhase
+      setIntroPhase(state.currentPhase)
+    }
+  }, [state.currentPhase])
 
   return (
     <main className="mx-auto min-h-screen max-w-5xl px-4 py-5">
@@ -69,6 +81,16 @@ export function GameScreen({ state }: Props): JSX.Element {
         {state.desafio !== null && !state.desafio.resolvido && <DesafioModal desafio={state.desafio} />}
       </AnimatePresence>
       <AnimatePresence>{onboarding && <Onboarding />}</AnimatePresence>
+
+      <AnimatePresence>
+        {introPhase !== null && !onboarding && (
+          <PhaseIntroOverlay
+            key={introPhase}
+            phase={introPhase}
+            onDone={() => setIntroPhase(null)}
+          />
+        )}
+      </AnimatePresence>
     </main>
   )
 }
