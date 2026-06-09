@@ -2,7 +2,7 @@
 // regra de negócio mora aqui.
 import type { CommandResponse, GameState } from "../types";
 
-const BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+const BASE = (import.meta.env.VITE_API_URL ?? "http://localhost:8000").replace(/\/$/, "");
 
 let counter = 0;
 // Gera um command_id único por ação (base para idempotência em retentativas).
@@ -17,7 +17,7 @@ export interface NewGame {
 }
 
 export async function createSession(): Promise<NewGame> {
-  const resp = await fetch(`${BASE}api/session`, { method: "POST" });
+  const resp = await fetch(`${BASE}/api/session`, { method: "POST" });
   if (!resp.ok) throw new Error("Não foi possível iniciar a partida.");
   return (await resp.json()) as NewGame;
 }
