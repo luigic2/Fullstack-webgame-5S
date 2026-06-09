@@ -14,17 +14,17 @@ const INTROS: Partial<Record<number, IntroData>> = {
   1: {
     pose: 'boasvindas',
     mensagens: [
-      'Bem-vindo ao chão de fábrica! Sou o Mestre 5S, seu guia nessa jornada.',
-      'Na fase SEIRI, classifique cada item da bancada: Manter, Etiqueta Vermelha ou Descartar.',
-      'Itens desnecessários criam obstáculos e escondem problemas. Foque no essencial!',
+      'Bem-vindo ao chão de fábrica! Sou o Mestre 5S, seu guia nessa jornada para dominar a metodologia 5S, vamos transformar esse ambiente de trabalho!.',
+      'O Primeiro Pilar da metodologia 5S é a SEIRI. ela se baseia na ideia da separação de tudo que é necessario daquilo que não é',
+      'Itens desnecessários criam obstáculos e escondem problemas. Separe cada item da bancada entre: Manter, Etiqueta Vermelha ou Descartar. Foque no essencial!',
     ],
   },
   2: {
     pose: 'pergunta',
     mensagens: [
       'SEIRI concluído! Agora é o SEITON — Senso de Ordenação.',
-      'Cada ferramenta tem um lugar exato no shadow board. Veja os contornos e encaixe cada item.',
       'O critério é simples: quanto mais usado, mais acessível deve estar. Organize!',
+      'Cada ferramenta tem um lugar exato no shadow board. Veja os contornos e encaixe cada item onde ele pertence.',
     ],
   },
   3: {
