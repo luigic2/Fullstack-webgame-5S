@@ -1,8 +1,8 @@
 // Item arrastável reutilizável (SEIRI, SEITON, Desafio). Arrasta com física,
-// dá snap de volta à origem e detecta a zona de soltura via elementFromPoint.
+// dá snap de volta à origem e detecta a zona de soltura via elementsFromPoint.
 // Acessível: também aceita seleção por teclado/botão (ver onDrop nas fases).
 import { motion } from 'framer-motion'
-import { useRef, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 interface Props {
   children: ReactNode
@@ -18,11 +18,8 @@ function clientCoords(e: MouseEvent | TouchEvent | PointerEvent): { x: number; y
 }
 
 export function Draggable({ children, onDrop, ariaLabel, disabled = false }: Props): JSX.Element {
-  const ref = useRef<HTMLDivElement>(null)
-
   return (
     <motion.div
-      ref={ref}
       role="button"
       tabIndex={0}
       aria-label={ariaLabel}
@@ -34,14 +31,17 @@ export function Draggable({ children, onDrop, ariaLabel, disabled = false }: Pro
       onDragEnd={(event) => {
         const c = clientCoords(event)
         if (c === null) return
-        // Desativa pointer-events temporariamente para que elementFromPoint
-        // atravesse o elemento arrastado e detecte a DropZone abaixo dele.
-        if (ref.current) ref.current.style.pointerEvents = 'none'
-        const alvo = document.elementFromPoint(c.x, c.y)
-        if (ref.current) ref.current.style.pointerEvents = ''
-        const zona = alvo?.closest('[data-zone]')
-        const zoneId = zona?.getAttribute('data-zone')
-        if (zoneId !== null && zoneId !== undefined) onDrop(zoneId)
+        // elementsFromPoint (plural) retorna toda a pilha de elementos naquela
+        // posição, do topo ao fundo — atravessa automaticamente o item arrastado
+        // e seus filhos até encontrar o [data-zone] do slot abaixo.
+        const pilha = document.elementsFromPoint(c.x, c.y)
+        let zona: Element | null = null
+        for (const el of pilha) {
+          const z = el.closest('[data-zone]')
+          if (z) { zona = z; break }
+        }
+        const zoneId = zona?.getAttribute('data-zone') ?? null
+        if (zoneId !== null) onDrop(zoneId)
       }}
       className={`cursor-grab touch-none select-none ${disabled ? 'opacity-50' : ''}`}
     >
