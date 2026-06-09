@@ -45,7 +45,7 @@ _SEITON_POOL: tuple[tuple[str, str, str, bool], ...] = (
     ("Nível de bolha", "📐", "slot-f", False),
 )
 
-_SEISO_POOL: tuple[tuple[str, str, str, bool | None], ...] = (
+_SEISO_POOL: tuple[tuple[str, str, str | None, bool ], ...] = (
     ("Bancada com poeira", "🪟", "Bancada Vazia", False),
     ("Piso com mancha de óleo", "🛢️", "Vazamento no flange inferior", True),
     ("Painel elétrico empoeirado", "🔌", "Fio desencapado exposto", True),
