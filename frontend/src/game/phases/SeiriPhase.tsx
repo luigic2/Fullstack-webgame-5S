@@ -40,7 +40,7 @@ export function SeiriPhase({ itens }: Props): JSX.Element {
                 >
                   <ItemCard item={item} />
                 </Draggable>
-                <div className="mt-1 flex justify-center gap-1">
+                {/* <div className="mt-1 flex justify-center gap-1">
                   {ZONAS.map((z) => (
                     <button
                       key={z.id}
@@ -52,7 +52,7 @@ export function SeiriPhase({ itens }: Props): JSX.Element {
                       {z.titulo.split(' ')[0]}
                     </button>
                   ))}
-                </div>
+                </div> */}
               </motion.div>
             ))}
           </AnimatePresence>
