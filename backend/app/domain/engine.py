@@ -122,7 +122,7 @@ def _seiri(state: GameState, payload: dict[str, object]) -> CommandOutcome:
     _talvez_desafio(state)
     if correto:
         return CommandOutcome(True, "comemora", f"Isso! {item.nome} no lugar certo.")
-    return CommandOutcome(False, "boasvindas", "Quase. Item raro não é lixo — vai pra etiqueta vermelha.")
+    return CommandOutcome(False, "boasvindas", "Quase. Item raro ou pouco usado vai pra etiqueta vermelha.")
 
 
 def _seiton(state: GameState, payload: dict[str, object]) -> CommandOutcome:

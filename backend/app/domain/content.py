@@ -46,12 +46,12 @@ _SEITON_POOL: tuple[tuple[str, str, str, bool], ...] = (
 )
 
 _SEISO_POOL: tuple[tuple[str, str, str | None], ...] = (
-    ("Bancada com poeira", "🪟", None),
+    ("Bancada com poeira", "🪟", "Bancada Vazia"),
     ("Piso com mancha de óleo", "🛢️", "Vazamento no flange inferior"),
     ("Painel elétrico empoeirado", "🔌", "Fio desencapado exposto"),
-    ("Vidro da máquina embaçado", "🪞", None),
+    ("Vidro da máquina embaçado", "🪞", "Vidro limpo e seguro"),
     ("Base do motor suja", "⚙️", "Parafuso de fixação solto"),
-    ("Canto da sala com restos", "🧹", None),
+    ("Canto da sala com restos", "🧹", "Canto Limpo e seguro"),
 )
 
 _SEIKETSU_POOL: tuple[tuple[str, str], ...] = (
