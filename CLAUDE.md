@@ -68,7 +68,7 @@ Respect language idioms. Do not introduce patterns from one ecosystem into anoth
 
 ## Project Structure
 
-- `backend/app/domain/` — Pure logic (no FastAPI): `sensos`, `situacoes` (validates senso server-side), `content` (generates phases by seed), `scoring`, `decay`, `plausibility`, `engine` (authoritative reducer), `state` (internal state + `public_view` without answers).
+- `backend/app/domain/` — Pure logic (no FastAPI): `sensos`, `situacoes` (validates senso server-side), `content` (generates phases by seed), `scoring`, `decay`, `plausibility`, `i18n` (server-side PT/EN messages), `engine` (authoritative reducer), `state` (internal state + `public_view` without answers).
 - `backend/app/api/` + `main.py` — DTOs, routes (`/api/session`, `/api/commands`, `/api/stream` SSE, `/healthz`), and signed tokens.
 - `backend/app/persistence/` — SQLite (`store`) + serialization (`serial`).
 - `frontend/src/` — `store/` (Zustand, public state only), `api/` (HTTP client + `useGameStream` SSE), `game/` (mentor, radar, dnd, `phases/` one per senso, challenges), `app/` (screens), `ui/`.

@@ -52,3 +52,44 @@ Functional, polished application delivered in **~12 hours**, plus **~2 hours** o
 
 - **Claude Code** — Opus for architecture and initial generation; Sonnet for the iteration and adjustment loop.
 - Official documentation for FastAPI, Pydantic, React, Vite, Framer Motion, and Zustand for API verification.
+
+## 8. Later Iterations (Post-Delivery)
+
+After the initial delivery I kept directing the AI through focused, reviewed
+changes. The pattern stayed the same — **I defined the behavior and the success
+criteria; the AI executed; I validated**:
+
+- **SHITSUKE timer bugfix.** The sustain timer, radar decay, and shocks were
+  starting the instant the player reached the final phase — while still reading
+  the 5S Master's intro. I specified the intended behavior (the clock must only
+  start once the player dismisses the dialog) and required the fix to stay
+  **server-authoritative**: a `shitsuke_iniciado` flag in `GameState` freezes
+  decay/shocks until a `shitsuke.iniciar` command arrives, advancing timestamps
+  to `now` so no "lost time" is applied. Shipped **with a regression test**.
+
+- **Reset system.** A confirm-guarded reset that returns to phase 1 with a fresh
+  random challenge — reusing the existing `start()` store action rather than
+  inventing new logic (simplicity first).
+
+- **Accessibility by default.** I replaced the optional "colorblind mode" toggle
+  with palette **and** redundant symbols applied to everyone by default, after
+  validating with Chrome's vision-deficiency emulator. Removing the toggle
+  deleted dead state/CSS rather than leaving a half-used feature flag.
+
+- **Internationalization (PT/EN), server-authoritative.** Same principle as the
+  Golden Rule: the **backend** owns localization. Language is fixed at session
+  creation, stored in `GameState`, and all content is served already-localized;
+  the same `seed` yields identical item IDs in either language so scoring stays
+  deterministic. The frontend only presents. TypeScript enforces key parity
+  between the PT and EN tables, and a runtime test guards `{placeholder}`
+  consistency — a class of bug the type system alone can't catch.
+
+- **Test hardening.** I raised frontend unit-test coverage from **~9% to ~67%**
+  by adding `@vitest/coverage-v8` and a focused, high-value batch (store,
+  HTTP client, i18n parity, the SHITSUKE timer regression, and several screens).
+  I deliberately **excluded** drag-and-drop physics and animation internals to
+  avoid flaky tests, asserting on `dispatch` contracts and pure logic instead.
+
+The throughline: every post-delivery change went through the same gate —
+strict typing, tests, and CI green (`mypy --strict`, `tsc`, pytest, vitest)
+before it counted as done.

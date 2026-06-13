@@ -1,0 +1,25 @@
+Copyright (c) 2026 Luigi Cavalieri. All Rights Reserved.
+
+This repository was produced as part of the "Desafio EKaizen" technical
+challenge. The source code is shared publicly for the sole purpose of
+evaluation and portfolio review.
+
+You MAY:
+- View and read the source code.
+- Run the project locally for evaluation purposes.
+
+You MAY NOT, without prior written permission from the author:
+- Copy, redistribute, sublicense, or republish this code, in whole or in part.
+- Use this code, or substantial portions of it, in other projects (commercial
+  or non-commercial).
+- Create derivative works based on this code.
+
+The confidential challenge brief (`documentacao-desafio-tecnico.pdf`) is NOT
+part of this repository and is intentionally excluded from version control.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

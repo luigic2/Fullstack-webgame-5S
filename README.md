@@ -23,11 +23,13 @@ This game lets players learn by doing: organize a messy workspace, fix inefficie
 
 ## 🎮 How It Works
 
-1. **Enter a workspace** with 100 randomly generated scenarios (seeded by user ID).
-2. **Drag items** into their correct category (tools, waste, supplies, etc.).
-3. **Real-time feedback** — radar meter grows as you sort correctly; the interface guides you toward the 5S principles.
-4. **Progress through phases** — one senso at a time, building muscle memory.
-5. **Compete in a leaderboard** (future phase) — track your workspace mastery.
+1. **Pick your language** — choose 🇧🇷 Portuguese or 🇺🇸 English on the entry screen.
+2. **Enter a workspace** with 100 randomly generated scenarios (seeded by user ID).
+3. **Drag items** into their correct category (tools, waste, supplies, etc.).
+4. **Real-time feedback** — radar meter grows as you sort correctly; the interface guides you toward the 5S principles.
+5. **Progress through phases** — one senso at a time, building muscle memory.
+6. **Reset anytime** — a confirm-guarded reset returns you to phase 1 with a fresh random challenge.
+7. **Reach the Hall** — a results screen rates your workspace mastery and awards badges.
 
 ---
 
@@ -105,12 +107,14 @@ ruff check app tests
 
 ```
 jogo-didatico-5S/
+├── .github/workflows/           # CI (lint, typecheck, test, build — both stacks)
 ├── frontend/                    # React + Vite
 │   ├── src/
-│   │   ├── app/                 # Screens (login, game, leaderboard)
+│   │   ├── app/                 # Screens (StartScreen, GameScreen, HallScreen, Onboarding)
 │   │   ├── game/                # Game logic (mentor, radar, phases, drag-and-drop)
 │   │   ├── store/               # Zustand (public state only)
 │   │   ├── api/                 # HTTP client + SSE hook
+│   │   ├── i18n/                # PT/EN strings + helpers
 │   │   └── ui/                  # Reusable components
 │   ├── vite.config.ts
 │   └── tsconfig.json            # strict: true
@@ -119,13 +123,17 @@ jogo-didatico-5S/
 │   ├── app/
 │   │   ├── domain/              # Pure logic (no framework)
 │   │   │   ├── sensos.py        # 5S categories and validation
-│   │   │   ├── situacoes.py     # Game scenario generator
-│   │   │   ├── scoring.py       # Points & leaderboard
+│   │   │   ├── situacoes.py     # Scenario answer-key validation
+│   │   │   ├── content.py       # Deterministic phase/content generator (by seed)
+│   │   │   ├── scoring.py       # Points & maturity rating
 │   │   │   ├── decay.py         # Engagement decay over time
+│   │   │   ├── plausibility.py  # Anti-cheat cadence checks
+│   │   │   ├── i18n.py          # Server-side PT/EN messages
 │   │   │   ├── engine.py        # Authoritative reducer
 │   │   │   └── state.py         # Game state + public_view
 │   │   ├── api/                 # FastAPI routes & DTOs
 │   │   ├── persistence/         # SQLite & serialization
+│   │   ├── seed/                # Scenario seed data
 │   │   └── main.py              # App entry point
 │   ├── tests/                   # pytest
 │   ├── pyproject.toml
@@ -187,18 +195,31 @@ The game feeds this through **visual feedback, drag-and-drop tactility, and real
 
 ---
 
+## 🌐 Internationalization (PT/EN)
+
+The game ships fully bilingual — **Portuguese** (default) and **English**.
+
+- **Pick on entry:** flag buttons (🇧🇷 / 🇺🇸) on the start screen; the choice is persisted to `localStorage`.
+- **Server-authoritative content:** the language is set when the session is created and stored in `GameState`. The backend serves every scenario, mentor line, and verdict **already localized** — the same `seed` produces the same items/IDs in either language, only the text changes.
+- **Japanese preserved:** the senso names (Seiri, Seiton, Seiso, Seiketsu, Shitsuke) and their symbols are intentionally kept in Japanese in both languages.
+- **Type-checked parity:** the EN string table is typed to require every key the PT table has; a runtime test also asserts `{placeholder}` consistency between languages.
+
+---
+
 ## ♿ Accessibility
 
 - **WCAG 2.1 AA compliant:** Color contrast, keyboard navigation, screen reader support
 - **Motion:** Respects `prefers-reduced-motion`
-- **Colorblind Friendly:** color palette for people with deuteranopia
+- **Colorblind Friendly by default:** the palette **and** redundant symbols (not color alone) convey category — no toggle required. Validated with Chrome's vision-deficiency emulator (deuteranopia/protanopia).
 - **Semantic HTML + ARIA:** Proper landmarks and labels
 
 ---
 
 ## 📝 License
 
-This project is part of the "Desafio EKaizen" initiative and includes hidden confidential challenge materials. Redistribution is not permitted without explicit authorization.
+This project was built for the **"Desafio EKaizen"** technical challenge. The source code is published for evaluation and portfolio purposes only — redistribution or reuse is not permitted without explicit authorization. See [LICENSE](./LICENSE) for the full terms.
+
+> The confidential challenge brief (`documentacao-desafio-tecnico.pdf`) is intentionally kept out of version control via `.gitignore` and is **not** part of this repository.
 
 ---
 
