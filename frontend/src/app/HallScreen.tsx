@@ -2,17 +2,10 @@
 // badges conquistadas e certificado compartilhável.
 import { motion } from 'framer-motion'
 import { Radar } from '../game/radar/Radar'
+import { BADGE_EMOJI, badgeNome, t } from '../i18n'
 import { useGameStore } from '../store/gameStore'
 import type { GameState } from '../types'
 import { Button } from '../ui/Button'
-
-const TODAS_BADGES: Record<string, string> = {
-  'Zero Refugo': '♻️',
-  'Caçador de Anomalias': '🔎',
-  'Olho de Águia': '🦅',
-  'Sequência Perfeita': '🔥',
-  'Mestre dos Sensos': '🏅',
-}
 
 interface Props {
   state: GameState
@@ -20,8 +13,13 @@ interface Props {
 
 export function HallScreen({ state }: Props): JSX.Element {
   const start = useGameStore((s) => s.start)
+  const lang = useGameStore((s) => s.lang)
   const compartilhar = (): void => {
-    const texto = `Concluí o eKaizen 5S como ${state.veredito} (${state.maturidade}) com 5S Score ${state.score5s}! 🏆`
+    const texto = t(lang, 'hall.shareText', {
+      veredito: state.veredito,
+      mat: state.maturidade,
+      s5: state.score5s,
+    })
     if (typeof navigator.share === 'function') void navigator.share({ text: texto })
     else void navigator.clipboard.writeText(texto)
   }
@@ -30,10 +28,12 @@ export function HallScreen({ state }: Props): JSX.Element {
     <main className="mx-auto min-h-screen max-w-3xl px-4 py-8 text-white">
       <Confetti />
       <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center">
-        <img src="/mentor/mentor-comemora.png" alt="Mestre 5S comemorando" className="mx-auto h-32 w-32 rounded-3xl object-cover shadow-2xl" />
-        <p className="mt-3 text-sm font-bold uppercase tracking-widest text-marca-laranja">Hall 5S</p>
+        <img src="/mentor/mentor-comemora.png" alt={t(lang, 'hall.alt')} className="mx-auto h-32 w-32 rounded-3xl object-cover shadow-2xl" />
+        <p className="mt-3 text-sm font-bold uppercase tracking-widest text-marca-laranja">{t(lang, 'hall.tag')}</p>
         <h1 className="text-4xl font-extrabold">{state.veredito}</h1>
-        <p className="text-lg text-white/80">Selo {state.maturidade} · 5S Score {state.score5s} · {state.score} pts</p>
+        <p className="text-lg text-white/80">
+          {t(lang, 'hall.scoreLine', { mat: state.maturidade, s5: state.score5s, pts: state.score })}
+        </p>
       </motion.div>
 
       <div className="mt-6 flex justify-center rounded-2xl bg-white/5 p-4">
@@ -41,19 +41,19 @@ export function HallScreen({ state }: Props): JSX.Element {
       </div>
 
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
-        <Card titulo="🏚️ Antes" texto="Ferramentas largadas, refugo misturado, óleo no piso, etiquetas apagadas. Ninguém achava nada." />
-        <Card titulo="✨ Depois" texto="Só o necessário, cada coisa no lugar, limpo e inspecionado, padrão visível e sustentado por hábito." />
+        <Card titulo={t(lang, 'hall.beforeTitle')} texto={t(lang, 'hall.beforeText')} />
+        <Card titulo={t(lang, 'hall.afterTitle')} texto={t(lang, 'hall.afterText')} />
       </div>
 
       <section className="mt-4 rounded-2xl bg-white/10 p-4">
-        <h2 className="mb-2 font-bold">Badges conquistadas</h2>
+        <h2 className="mb-2 font-bold">{t(lang, 'hall.badgesTitle')}</h2>
         {state.badges.length === 0 ? (
-          <p className="text-sm text-white/60">Nenhuma badge desta vez — jogue de novo e mire o ouro!</p>
+          <p className="text-sm text-white/60">{t(lang, 'hall.noBadges')}</p>
         ) : (
           <div className="flex flex-wrap gap-2">
             {state.badges.map((b) => (
               <span key={b} className="rounded-full bg-marca-laranja/90 px-3 py-1 text-sm font-bold">
-                {TODAS_BADGES[b] ?? '🏆'} {b}
+                {BADGE_EMOJI[b] ?? '🏆'} {badgeNome(lang, b)}
               </span>
             ))}
           </div>
@@ -61,8 +61,8 @@ export function HallScreen({ state }: Props): JSX.Element {
       </section>
 
       <div className="mt-6 flex flex-wrap justify-center gap-3">
-        <Button onClick={compartilhar} variant="ghost">📤 Compartilhar certificado</Button>
-        <Button onClick={() => void start()}>🔄 Jogar novamente</Button>
+        <Button onClick={compartilhar} variant="ghost">{t(lang, 'hall.share')}</Button>
+        <Button onClick={() => void start()}>{t(lang, 'hall.playAgain')}</Button>
       </div>
     </main>
   )

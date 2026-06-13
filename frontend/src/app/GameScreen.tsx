@@ -6,7 +6,8 @@ import { DesafioModal } from '../game/desafio/DesafioModal'
 import { Mentor } from '../game/mentor/Mentor'
 import { PhaseRouter } from '../game/phases/PhaseRouter'
 import { Radar } from '../game/radar/Radar'
-import { SENSO_NOME, sensoFromPhase } from '../game/sensoInfo'
+import { sensoFromPhase } from '../game/sensoInfo'
+import { sensoNome, t } from '../i18n'
 import { useGameStore } from '../store/gameStore'
 import type { GameState } from '../types'
 import { Button } from '../ui/Button'
@@ -20,6 +21,7 @@ interface Props {
 export function GameScreen({ state }: Props): JSX.Element {
   const dispatch = useGameStore((s) => s.dispatch)
   const onboarding = useGameStore((s) => s.onboarding)
+  const lang = useGameStore((s) => s.lang)
   const senso = sensoFromPhase(state.currentPhase)
   const ultimaFase = state.currentPhase === 5
   const concluirBloqueado = ultimaFase && !state.shitsukeDesafio.sustentado
@@ -52,14 +54,14 @@ export function GameScreen({ state }: Props): JSX.Element {
         <section className="space-y-4">
           <div className="rounded-2xl bg-marca-azul/40 p-3 text-white">
             <p className="text-xs font-bold uppercase tracking-wide text-marca-laranja">
-              Fase {state.currentPhase} de 5
+              {t(lang, 'game.phaseLabel', { n: state.currentPhase })}
             </p>
-            <h2 className="text-lg font-extrabold">{SENSO_NOME[senso]}</h2>
+            <h2 className="text-lg font-extrabold">{sensoNome(lang, senso)}</h2>
           </div>
           <PhaseRouter state={state} />
           <div className="flex justify-end">
             <Button onClick={() => void dispatch('fase.avancar')} disabled={concluirBloqueado}>
-              {ultimaFase ? '🏆 Concluir jornada' : '➡ Avançar fase'}
+              {ultimaFase ? t(lang, 'game.finish') : t(lang, 'game.advance')}
             </Button>
           </div>
         </section>

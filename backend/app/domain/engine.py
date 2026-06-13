@@ -18,7 +18,8 @@ from .decay import (
     aplicar_decay,
     setores_do_choque,
 )
-from .sensos import PHASE_ORDER, Senso
+from .i18n import t
+from .sensos import PHASE_ORDER, Lang, Senso
 from .state import (
     GameState,
     SeiketsuSpot,
@@ -44,17 +45,18 @@ class UnknownCommand(Exception):
     """Tipo de comando não reconhecido."""
 
 
-def new_game(session_id: str, seed: int, now: float) -> GameState:
+def new_game(session_id: str, seed: int, now: float, lang: Lang = "pt") -> GameState:
     state = GameState(
         session_id=session_id,
         seed=seed,
         created_at=now,
         last_decay_at=now,
-        seiri=content.gen_seiri(seed),
-        seiton=content.gen_seiton(seed),
-        seiso=content.gen_seiso(seed),
-        seiketsu=content.gen_seiketsu(seed),
-        shitsuke=content.gen_shitsuke(seed),
+        lang=lang,
+        seiri=content.gen_seiri(seed, lang),
+        seiton=content.gen_seiton(seed, lang),
+        seiso=content.gen_seiso(seed, lang),
+        seiketsu=content.gen_seiketsu(seed, lang),
+        shitsuke=content.gen_shitsuke(seed, lang),
     )
     return state
 
@@ -113,7 +115,7 @@ def apply(state: GameState, ctype: str, payload: dict[str, object], now: float) 
         return _shitsuke(state, payload, now)
     if ctype == "shitsuke.tick":
         _processar_shitsuke(state, now)
-        return CommandOutcome(None, "pergunta", "A entropia avança — sustente o padrão!")
+        return CommandOutcome(None, "pergunta", t(state.lang, "shitsuke.tick"))
     if ctype == "desafio.classificar":
         return _desafio(state, payload)
     if ctype == "fase.avancar":
@@ -131,8 +133,8 @@ def _seiri(state: GameState, payload: dict[str, object]) -> CommandOutcome:
     _registrar(state, correto)
     _talvez_desafio(state)
     if correto:
-        return CommandOutcome(True, "comemora", f"Isso! {item.nome} no lugar certo.")
-    return CommandOutcome(False, "boasvindas", "Quase. Item raro ou pouco usado vai pra etiqueta vermelha.")
+        return CommandOutcome(True, "comemora", t(state.lang, "seiri.correto", nome=item.nome))
+    return CommandOutcome(False, "boasvindas", t(state.lang, "seiri.errado"))
 
 
 def _seiton(state: GameState, payload: dict[str, object]) -> CommandOutcome:
@@ -144,7 +146,7 @@ def _seiton(state: GameState, payload: dict[str, object]) -> CommandOutcome:
     state.score += scoring.pontos_classificacao(correto, state.streak)
     _registrar(state, correto)
     _talvez_desafio(state)
-    msg = "Encaixe perfeito — cada coisa no seu lugar!" if correto else "Esse contorno é de outra peça."
+    msg = t(state.lang, "seiton.correto") if correto else t(state.lang, "seiton.errado")
     return CommandOutcome(correto, "comemora" if correto else "boasvindas", msg)
 
 
@@ -154,7 +156,7 @@ def _seiso_limpar(state: GameState, payload: dict[str, object]) -> CommandOutcom
         tile.limpo = True
         state.score += scoring.PONTOS_ACERTO  # inspecionar é a ação que pontua
     _recompute_seiso(state)
-    return CommandOutcome(True, "pergunta", f"Achado: “{tile.descricao}”. É anomalia? Registre ou ignore.")
+    return CommandOutcome(True, "pergunta", t(state.lang, "seiso.achado", descricao=tile.descricao))
 
 
 def _seiso_decidir(state: GameState, payload: dict[str, object]) -> CommandOutcome:
@@ -163,7 +165,7 @@ def _seiso_decidir(state: GameState, payload: dict[str, object]) -> CommandOutco
     if decisao not in ("registrar", "ignorar"):
         raise UnknownCommand("decisão inválida")
     if not tile.limpo or tile.decisao is not None:
-        return CommandOutcome(None, "pergunta", "Inspecione a área antes de decidir.")
+        return CommandOutcome(None, "pergunta", t(state.lang, "seiso.decidir_antes"))
     tile.decisao = decisao
     registrou = decisao == "registrar"
     correto = registrou == tile.is_anomalia
@@ -175,11 +177,11 @@ def _seiso_decidir(state: GameState, payload: dict[str, object]) -> CommandOutco
     _registrar(state, correto)
     if correto:
         if registrou:
-            return CommandOutcome(True, "comemora", "Anomalia registrada — você evitou uma falha futura!")
-        return CommandOutcome(True, "aprova", "Certo: nada de anormal aqui. Foco no que importa!")
+            return CommandOutcome(True, "comemora", t(state.lang, "seiso.anomalia_registrada"))
+        return CommandOutcome(True, "aprova", t(state.lang, "seiso.ignorou_certo"))
     if registrou:
-        return CommandOutcome(False, "boasvindas", "Falso positivo: isso era mundano. Registrar demais vira ruído.")
-    return CommandOutcome(False, "pergunta", "Você ignorou uma anomalia real — atenção redobrada!")
+        return CommandOutcome(False, "boasvindas", t(state.lang, "seiso.falso_positivo"))
+    return CommandOutcome(False, "pergunta", t(state.lang, "seiso.ignorou_anomalia"))
 
 
 def _seiso_acertou(tile: SeisoTile) -> bool:
@@ -197,7 +199,7 @@ def _seiketsu_snapshot(state: GameState) -> CommandOutcome:
         for spot in state.seiketsu:
             spot.posicao_atual = perm[spot.posicao_correta]
         state.seiketsu_snapshot = True
-    return CommandOutcome(None, "pergunta", "Padrão fotografado! Compare cada item com a foto: conforme ou desvio?")
+    return CommandOutcome(None, "pergunta", t(state.lang, "seiketsu.snapshot"))
 
 
 def _seiketsu_desvio(spot: SeiketsuSpot) -> bool:
@@ -206,7 +208,7 @@ def _seiketsu_desvio(spot: SeiketsuSpot) -> bool:
 
 def _seiketsu(state: GameState, payload: dict[str, object]) -> CommandOutcome:
     if not state.seiketsu_snapshot:
-        return CommandOutcome(None, "pergunta", "Tire o snapshot do padrão primeiro.")
+        return CommandOutcome(None, "pergunta", t(state.lang, "seiketsu.snapshot_antes"))
     spot = next(s for s in state.seiketsu if s.id == _s(payload, "spotId"))
     marcou = _b(payload, "desvio")
     spot.avaliado_como_desvio = marcou
@@ -223,7 +225,7 @@ def _seiketsu(state: GameState, payload: dict[str, object]) -> CommandOutcome:
     )
     _set_radar(state, Senso.SEIKETSU, corretos, len(state.seiketsu))
     _registrar(state, correto)
-    msg = "Posição certa na mosca!" if correto else "Olhe de novo: compare com a foto do padrão."
+    msg = t(state.lang, "seiketsu.correto") if correto else t(state.lang, "seiketsu.errado")
     return CommandOutcome(correto, "comemora" if correto else "boasvindas", msg)
 
 
@@ -238,7 +240,7 @@ def _shitsuke(state: GameState, payload: dict[str, object], now: float) -> Comma
     state.score += scoring.pontos_classificacao(True, state.streak)
     _registrar(state, True)
     _avaliar_sustentacao(state, now)  # o bump pode reerguer a média acima da meta
-    return CommandOutcome(True, "aprova", "Auditoria corrigida — disciplina sustenta o 5S!")
+    return CommandOutcome(True, "aprova", t(state.lang, "shitsuke.corrigido"))
 
 
 def _shitsuke_iniciar(state: GameState, now: float) -> CommandOutcome:
@@ -247,7 +249,7 @@ def _shitsuke_iniciar(state: GameState, now: float) -> CommandOutcome:
         state.shitsuke_iniciado = True
         state.shitsuke_last_shock_at = now
         state.last_decay_at = now
-    return CommandOutcome(None, "comemora", "Desafio iniciado — sustente o padrão por 30s!")
+    return CommandOutcome(None, "comemora", t(state.lang, "shitsuke.iniciado"))
 
 
 def _processar_shitsuke(state: GameState, now: float) -> None:
@@ -314,13 +316,13 @@ def _desafio(state: GameState, payload: dict[str, object]) -> CommandOutcome:
     certo = situacoes.senso_correto(state.desafio.situacao_id)
     state.desafio = None
     if correto:
-        return CommandOutcome(True, "comemora", "Acertou o senso! Streak crescendo. 🔥")
-    return CommandOutcome(False, "boasvindas", f"O senso certo era {certo.name} — por isso resolve essa situação.")
+        return CommandOutcome(True, "comemora", t(state.lang, "desafio.correto"))
+    return CommandOutcome(False, "boasvindas", t(state.lang, "desafio.errado", senso=certo.name))
 
 
 def _talvez_desafio(state: GameState) -> None:
     if state.desafio is None and state.acoes > 0 and state.acoes % ACOES_POR_DESAFIO == 0:
-        state.desafio = content.next_desafio(state.seed, state.acoes)
+        state.desafio = content.next_desafio(state.seed, state.acoes, state.lang)
 
 
 def _avancar(state: GameState, now: float) -> CommandOutcome:
@@ -330,12 +332,10 @@ def _avancar(state: GameState, now: float) -> CommandOutcome:
         if state.shitsuke_sustentado:
             state.finished = True
             _conceder_badges(state)
-            return CommandOutcome(True, "comemora", "Jornada concluída! 5S sustentado sob pressão. 🏆")
-        return CommandOutcome(
-            None, "pergunta", "Sustente a média ≥50% até o cronômetro zerar para concluir."
-        )
+            return CommandOutcome(True, "comemora", t(state.lang, "fase.concluida"))
+        return CommandOutcome(None, "pergunta", t(state.lang, "fase.sustentar"))
     if state.radar[state.current_phase] < 70.0:
-        return CommandOutcome(None, "pergunta", "Atinja 70 no radar desta fase para liberar a próxima.")
+        return CommandOutcome(None, "pergunta", t(state.lang, "fase.bloqueada"))
     state.current_phase = PHASE_ORDER[idx + 1]
     state.last_decay_at = now
     if state.current_phase == Senso.SHITSUKE:
@@ -345,17 +345,19 @@ def _avancar(state: GameState, now: float) -> CommandOutcome:
         state.shitsuke_sustain_since = None
         state.shitsuke_sustentado = False
         state.shitsuke_restante = DURACAO_DESAFIO
-    return CommandOutcome(True, "aprova", f"Fase liberada: {state.current_phase.name}!")
+    return CommandOutcome(True, "aprova", t(state.lang, "fase.liberada", senso=state.current_phase.name))
 
 
 def _conceder_badges(state: GameState) -> None:
+    # Badges são gravadas por CHAVE estável; o nome/descrição localizados são
+    # responsabilidade do cliente (ver HallScreen).
     if all(i.resolvido == i.destino for i in state.seiri):
-        state.badges.add("Zero Refugo")
-    if all(t.decisao == "registrar" for t in state.seiso if t.is_anomalia):
-        state.badges.add("Caçador de Anomalias")
+        state.badges.add("zero_refugo")
+    if all(tile.decisao == "registrar" for tile in state.seiso if tile.is_anomalia):
+        state.badges.add("cacador_anomalias")
     if state.falsos_positivos == 0 and any(_seiketsu_desvio(s) for s in state.seiketsu):
-        state.badges.add("Olho de Águia")
+        state.badges.add("olho_aguia")
     if state.melhor_streak >= 10:
-        state.badges.add("Sequência Perfeita")
+        state.badges.add("sequencia_perfeita")
     if all(v >= 90.0 for v in state.radar.values()):
-        state.badges.add("Mestre dos Sensos")
+        state.badges.add("mestre_sensos")

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import json
 
-from app.domain.sensos import PHASE_ORDER, Senso
+from app.domain.sensos import PHASE_ORDER, Lang, Senso
 from app.domain.state import (
     Desafio,
     GameState,
@@ -27,6 +27,7 @@ def to_json(state: GameState) -> str:
         "seed": state.seed,
         "created_at": state.created_at,
         "last_decay_at": state.last_decay_at,
+        "lang": state.lang,
         "current_phase": int(state.current_phase),
         "finished": state.finished,
         "score": state.score,
@@ -102,11 +103,13 @@ def from_json(raw: str) -> GameState:
         )
     badges_raw = d["badges"]
     assert isinstance(badges_raw, list)
+    lang: Lang = "en" if d.get("lang") == "en" else "pt"
     return GameState(
         session_id=_str(d, "session_id"),
         seed=_int(d, "seed"),
         created_at=_float(d, "created_at"),
         last_decay_at=_float(d, "last_decay_at"),
+        lang=lang,
         current_phase=Senso(_int(d, "current_phase")),
         finished=_bool(d, "finished"),
         score=_int(d, "score"),

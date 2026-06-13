@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 
 from .decay import DURACAO_DESAFIO, META_SUSTENTACAO
-from .sensos import PHASE_ORDER, Senso, senso_metadata
+from .sensos import PHASE_ORDER, Lang, Senso, senso_metadata
 
 # Patamar (0..100) que uma fase precisa atingir no radar para liberar a próxima.
 PHASE_UNLOCK_THRESHOLD = 70.0
@@ -104,6 +104,7 @@ class GameState:
     seed: int
     created_at: float
     last_decay_at: float
+    lang: Lang = "pt"
     current_phase: Senso = Senso.SEIRI
     finished: bool = False
     score: int = 0
@@ -134,26 +135,35 @@ class GameState:
         return all(self.radar[PHASE_ORDER[i]] >= PHASE_UNLOCK_THRESHOLD for i in range(idx))
 
 
-def maturidade(score_5s: float) -> str:
+_MATURIDADE: dict[Lang, tuple[str, str, str, str]] = {
+    "pt": ("Diamante", "Ouro", "Prata", "Bronze"),
+    "en": ("Diamond", "Gold", "Silver", "Bronze"),
+}
+
+_VEREDITO: dict[Lang, tuple[str, str, str, str]] = {
+    "pt": ("Mestre 5S", "Auditor 5S", "Praticante 5S", "Aprendiz 5S"),
+    "en": ("5S Master", "5S Auditor", "5S Practitioner", "5S Apprentice"),
+}
+
+
+def _faixa(score_5s: float, tabela: tuple[str, str, str, str]) -> str:
+    if score_5s >= 90:
+        return tabela[0]
+    if score_5s >= 75:
+        return tabela[1]
+    if score_5s >= 55:
+        return tabela[2]
+    return tabela[3]
+
+
+def maturidade(score_5s: float, lang: Lang = "pt") -> str:
     """Selo de maturidade a partir do 5S Score médio (0..100)."""
-    if score_5s >= 90:
-        return "Diamante"
-    if score_5s >= 75:
-        return "Ouro"
-    if score_5s >= 55:
-        return "Prata"
-    return "Bronze"
+    return _faixa(score_5s, _MATURIDADE[lang])
 
 
-def veredito(score_5s: float) -> str:
+def veredito(score_5s: float, lang: Lang = "pt") -> str:
     """Título do jogador na tela final."""
-    if score_5s >= 90:
-        return "Mestre 5S"
-    if score_5s >= 75:
-        return "Auditor 5S"
-    if score_5s >= 55:
-        return "Praticante 5S"
-    return "Aprendiz 5S"
+    return _faixa(score_5s, _VEREDITO[lang])
 
 
 def score_5s(state: GameState) -> float:
@@ -173,9 +183,9 @@ def public_view(state: GameState) -> dict[str, object]:
         "melhorStreak": state.melhor_streak,
         "radar": {senso.name: round(valor, 1) for senso, valor in state.radar.items()},
         "score5s": round(media, 1),
-        "maturidade": maturidade(media),
-        "veredito": veredito(media),
-        "sensos": [senso_metadata(s) for s in PHASE_ORDER],
+        "maturidade": maturidade(media, state.lang),
+        "veredito": veredito(media, state.lang),
+        "sensos": [senso_metadata(s, state.lang) for s in PHASE_ORDER],
         "unlocked": [s.name for s in PHASE_ORDER if state.phase_unlocked(s)],
         "badges": sorted(state.badges),
         "phases": _public_phases(state),

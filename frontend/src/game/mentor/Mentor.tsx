@@ -1,18 +1,20 @@
 // O Mestre 5S: mascote-guia. Troca de pose conforme o estado emocional e
 // fala em balão. Entra com animação (Framer Motion).
 import { AnimatePresence, motion } from 'framer-motion'
+import { t } from '../../i18n'
 import { useGameStore } from '../../store/gameStore'
 import { MENTOR_POSE } from '../sensoInfo'
 
 export function Mentor(): JSX.Element {
   const mentor = useGameStore((s) => s.mentor)
+  const lang = useGameStore((s) => s.lang)
 
   return (
     <div className="flex items-end gap-3" aria-live="polite">
       <motion.img
         key={mentor.mood}
         src={MENTOR_POSE[mentor.mood]}
-        alt={`Mentor 5S (${mentor.mood})`}
+        alt={t(lang, 'mentor.alt', { mood: mentor.mood })}
         className="h-24 w-24 shrink-0 rounded-2xl object-cover shadow-xl ring-2 ring-white/30 sm:h-28 sm:w-28"
         initial={{ scale: 0.7, rotate: -6, opacity: 0 }}
         animate={{ scale: 1, rotate: 0, opacity: 1 }}

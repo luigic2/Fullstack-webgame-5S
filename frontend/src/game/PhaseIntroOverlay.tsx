@@ -2,55 +2,19 @@
 // e avança mensagem a mensagem até o jogador estar pronto para começar.
 import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
+import type { TKey } from '../i18n'
+import { sensoNome, t } from '../i18n'
+import { useGameStore } from '../store/gameStore'
 import type { MentorMood } from '../types'
-import { MENTOR_POSE, SENSO_COR, SENSO_NOME, SENSO_SIMBOLO, sensoFromPhase } from './sensoInfo'
+import { MENTOR_POSE, SENSO_COR, SENSO_SIMBOLO, sensoFromPhase } from './sensoInfo'
 
-interface IntroData {
-  pose: MentorMood
-  mensagens: string[]
-}
-
-const INTROS: Partial<Record<number, IntroData>> = {
-  1: {
-    pose: 'boasvindas',
-    mensagens: [
-      'Bem-vindo ao chão de fábrica! Sou o Mestre 5S, seu guia nessa jornada para dominar a metodologia 5S, vamos transformar esse ambiente de trabalho juntos!',
-      'O Primeiro Pilar da metodologia 5S é a SEIRI. ela se baseia na ideia da separação de tudo que é necessario daquilo que não é',
-      'Itens desnecessários criam obstáculos e escondem problemas. Separe cada item da bancada entre: Manter, Etiqueta Vermelha ou Descartar. Foque no essencial!',
-    ],
-  },
-  2: {
-    pose: 'pergunta',
-    mensagens: [
-      'SEIRI concluído! Agora é o SEITON — Senso de Ordenação.',
-      'O critério é simples: quanto mais usado, mais acessível deve estar. Organize!',
-      'Cada ferramenta tem um lugar exato no shadow board. Veja os contornos e encaixe cada item onde ele pertence.',
-    ],
-  },
-  3: {
-    pose: 'aprova',
-    mensagens: [
-      'Parabéns pelo SEITON! Próxima fase: SEISO — Senso de Limpeza.',
-      'Esfregue cada área para revelar o achado escondido sob a sujeira.',
-      'Nem todo achado é problema: registre as anomalias reais e ignore o que é mundano.',
-    ],
-  },
-  4: {
-    pose: 'pergunta',
-    mensagens: [
-      'SEISO concluído! Bem-vindo ao SEIKETSU — Senso de Padronização.',
-      'Fotografe o padrão para criar a referência. Depois os itens vão se embaralhar.',
-      'Compare cada item com a foto: marque conforme se está no lugar, desvio se mudou de posição.',
-    ],
-  },
-  5: {
-    pose: 'comemora',
-    mensagens: [
-      'Chegamos ao SHITSUKE — o Senso de Disciplina. A fase mais desafiadora!',
-      'A entropia não para: o radar decai e, a cada 5s, um choque derruba 2 setores em 20%.',
-      'Audite sem parar e mantenha a média ≥ 50% por 30 segundos contínuos para concluir a jornada!',
-    ],
-  },
+// Pose do Mestre por fase. As mensagens vêm do i18n (intro.p{fase}.m{1..3}).
+const POSES: Partial<Record<number, MentorMood>> = {
+  1: 'boasvindas',
+  2: 'pergunta',
+  3: 'aprova',
+  4: 'pergunta',
+  5: 'comemora',
 }
 
 interface Props {
@@ -59,12 +23,14 @@ interface Props {
 }
 
 export function PhaseIntroOverlay({ phase, onDone }: Props): JSX.Element {
+  const lang = useGameStore((s) => s.lang)
   const [idx, setIdx] = useState(0)
-  const data = INTROS[phase]
-  if (!data) return <></>
+  const pose = POSES[phase]
+  if (pose === undefined) return <></>
 
+  const mensagens = [1, 2, 3].map((m) => t(lang, `intro.p${phase}.m${m}` as TKey))
   const senso = sensoFromPhase(phase)
-  const isLast = idx === data.mensagens.length - 1
+  const isLast = idx === mensagens.length - 1
 
   const handleNext = (): void => {
     if (isLast) {
@@ -89,13 +55,13 @@ export function PhaseIntroOverlay({ phase, onDone }: Props): JSX.Element {
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.1 }}
       >
-        {SENSO_SIMBOLO[senso]} {SENSO_NOME[senso]}
+        {SENSO_SIMBOLO[senso]} {sensoNome(lang, senso)}
       </motion.div>
 
       <div className="flex items-end gap-4">
         <motion.img
-          src={MENTOR_POSE[data.pose]}
-          alt="Mestre 5S"
+          src={MENTOR_POSE[pose]}
+          alt={t(lang, 'intro.alt')}
           className="h-36 w-36 shrink-0 rounded-2xl object-cover shadow-2xl ring-4 ring-white/30"
           initial={{ scale: 0.7, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -112,9 +78,9 @@ export function PhaseIntroOverlay({ phase, onDone }: Props): JSX.Element {
             transition={{ duration: 0.22 }}
           >
             <span className="absolute -left-2 bottom-6 h-4 w-4 rotate-45 bg-white" aria-hidden="true" />
-            <p className="text-base font-medium leading-relaxed">{data.mensagens[idx]}</p>
+            <p className="text-base font-medium leading-relaxed">{mensagens[idx]}</p>
             <p className="mt-3 text-right text-xs text-gray-400">
-              {idx + 1} / {data.mensagens.length}
+              {idx + 1} / {mensagens.length}
             </p>
           </motion.div>
         </AnimatePresence>
@@ -127,7 +93,7 @@ export function PhaseIntroOverlay({ phase, onDone }: Props): JSX.Element {
         transition={{ delay: 0.2 }}
         onClick={handleNext}
       >
-        {isLast ? 'Começar fase ▶' : 'Avançar ▶'}
+        {isLast ? t(lang, 'intro.start') : t(lang, 'intro.next')}
       </motion.button>
     </motion.div>
   )

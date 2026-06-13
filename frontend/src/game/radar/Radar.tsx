@@ -2,6 +2,8 @@
 // via springs do Framer Motion conforme o estado do servidor muda.
 import { motion, useSpring, useTransform } from 'framer-motion'
 import { useEffect } from 'react'
+import { t } from '../../i18n'
+import { useGameStore } from '../../store/gameStore'
 import type { SensoKey } from '../../types'
 import { SENSO_ORDER } from '../../types'
 import { SENSO_COR, SENSO_SIMBOLO } from '../sensoInfo'
@@ -25,6 +27,7 @@ interface Props {
 }
 
 export function Radar({ radar }: Props): JSX.Element {
+  const lang = useGameStore((s) => s.lang)
   const springs = SENSO_ORDER.map((k) =>
     // eslint-disable-next-line react-hooks/rules-of-hooks -- ordem fixa (5 eixos)
     useSpring(radar[k], { stiffness: 120, damping: 20 }),
@@ -39,7 +42,7 @@ export function Radar({ radar }: Props): JSX.Element {
 
   return (
     <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="w-full max-w-[300px]" role="img"
-      aria-label="Radar 5S com a pontuação de cada senso">
+      aria-label={t(lang, 'radar.aria')}>
       {[0.25, 0.5, 0.75, 1].map((e) => (
         <polygon key={e} points={grade(e)} fill="none" stroke="rgba(255,255,255,0.18)" />
       ))}

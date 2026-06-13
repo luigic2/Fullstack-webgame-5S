@@ -1,6 +1,7 @@
 // SEITON — Ordenar. Encaixe cada ferramenta no contorno (shadow board) certo.
 // O servidor pontua a posição correta.
 import { motion } from 'framer-motion'
+import { t } from '../../i18n'
 import { useGameStore } from '../../store/gameStore'
 import type { SeitonItem } from '../../types'
 import { Draggable } from '../dnd/Draggable'
@@ -11,6 +12,7 @@ interface Props {
 
 export function SeitonPhase({ itens }: Props): JSX.Element {
   const dispatch = useGameStore((s) => s.dispatch)
+  const lang = useGameStore((s) => s.lang)
   const slots = [...itens].sort((a, b) => a.slot.localeCompare(b.slot))
   const naBandeja = itens.filter((i) => i.encaixadoEm === null)
 
@@ -21,7 +23,7 @@ export function SeitonPhase({ itens }: Props): JSX.Element {
   return (
     <div className="space-y-4">
       <div className="rounded-2xl bg-white/10 p-4">
-        <p className="mb-3 text-sm font-semibold text-white/80">Shadow board — encaixe cada item no seu contorno</p>
+        <p className="mb-3 text-sm font-semibold text-white/80">{t(lang, 'seiton.board')}</p>
         <div className="grid grid-cols-3 gap-3">
           {slots.map((alvo) => {
             const ocupante = itens.find((i) => i.encaixadoEm === alvo.slot)
@@ -51,12 +53,12 @@ export function SeitonPhase({ itens }: Props): JSX.Element {
       </div>
 
       <div className="rounded-2xl bg-white/10 p-4">
-        <p className="mb-3 text-sm font-semibold text-white/80">Bandeja ({naBandeja.length})</p>
+        <p className="mb-3 text-sm font-semibold text-white/80">{t(lang, 'seiton.tray', { n: naBandeja.length })}</p>
         <div className="flex min-h-[80px] flex-wrap gap-3">
           {naBandeja.map((item) => (
             <Draggable
               key={item.id}
-              ariaLabel={`${item.nome}. Arraste para o contorno correspondente.`}
+              ariaLabel={t(lang, 'seiton.itemAria', { nome: item.nome })}
               onDrop={(slot) => encaixar(item, slot)}
             >
               <div className="flex w-24 flex-col items-center rounded-xl bg-white p-2 text-center shadow-lg">
@@ -68,7 +70,7 @@ export function SeitonPhase({ itens }: Props): JSX.Element {
             </Draggable>
           ))}
           {naBandeja.length === 0 && (
-            <p className="self-center text-white/70">Tudo no lugar! Avance para o próximo senso. ✅</p>
+            <p className="self-center text-white/70">{t(lang, 'seiton.done')}</p>
           )}
         </div>
       </div>

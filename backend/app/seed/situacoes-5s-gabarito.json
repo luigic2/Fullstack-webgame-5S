@@ -45,600 +45,700 @@
     {
       "id": 1,
       "situacao": "A altura de interruptores dificulta o acesso",
+      "en": "The height of switches makes them hard to reach",
       "sensoCorreto": 2,
       "senso": "SEITON"
     },
     {
       "id": 2,
       "situacao": "A disposição de cabos elétricos provoca riscos",
+      "en": "The layout of electrical cables creates hazards",
       "sensoCorreto": 2,
       "senso": "SEITON"
     },
     {
       "id": 3,
       "situacao": "A identificação dos locais de guarda não está padronizada",
+      "en": "The labeling of storage locations is not standardized",
       "sensoCorreto": 4,
       "senso": "SEIKETSU"
     },
     {
       "id": 4,
       "situacao": "A maioria dos prazos não é cumprida",
+      "en": "Most deadlines are not met",
       "sensoCorreto": 5,
       "senso": "SHITSUKE"
     },
     {
       "id": 5,
       "situacao": "A pintura das tubulações não está padronizada",
+      "en": "The painting of the piping is not standardized",
       "sensoCorreto": 4,
       "senso": "SEIKETSU"
     },
     {
       "id": 6,
       "situacao": "A posição de alguns móveis dificulta a circulação e o acesso",
+      "en": "The position of some furniture hinders circulation and access",
       "sensoCorreto": 2,
       "senso": "SEITON"
     },
     {
       "id": 7,
       "situacao": "A prática do 5S ainda não é espontânea",
+      "en": "The practice of 5S is not yet spontaneous",
       "sensoCorreto": 5,
       "senso": "SHITSUKE"
     },
     {
       "id": 8,
       "situacao": "A retirada de alguns recursos desordena os demais",
+      "en": "Removing some resources disorganizes the rest",
       "sensoCorreto": 2,
       "senso": "SEITON"
     },
     {
       "id": 9,
       "situacao": "Algumas identificações estão apagadas",
+      "en": "Some labels are worn out",
       "sensoCorreto": 2,
       "senso": "SEITON"
     },
     {
       "id": 10,
       "situacao": "Algumas pessoas despejam óleo no esgoto",
+      "en": "Some people dump oil into the drain",
       "sensoCorreto": 5,
       "senso": "SHITSUKE"
     },
     {
       "id": 11,
       "situacao": "Algumas pessoas não consultam a caixa de entrada de e-mails",
+      "en": "Some people do not check their email inbox",
       "sensoCorreto": 5,
       "senso": "SHITSUKE"
     },
     {
       "id": 12,
       "situacao": "Algumas pessoas não estão utilizando os recursos ergonômicos oferecidos pela empresa",
+      "en": "Some people are not using the ergonomic resources provided by the company",
       "sensoCorreto": 5,
       "senso": "SHITSUKE"
     },
     {
       "id": 13,
       "situacao": "Algumas pessoas não fazem ginástica laboral",
+      "en": "Some people do not do workplace stretching exercises",
       "sensoCorreto": 4,
       "senso": "SEIKETSU"
     },
     {
       "id": 14,
       "situacao": "Algumas pessoas não usam os EPIs exigidos",
+      "en": "Some people do not wear the required PPE",
       "sensoCorreto": 5,
       "senso": "SHITSUKE"
     },
     {
       "id": 15,
       "situacao": "Algumas pessoas se alimentam em locais não higiênicos",
+      "en": "Some people eat in unhygienic places",
       "sensoCorreto": 4,
       "senso": "SEIKETSU"
     },
     {
       "id": 16,
       "situacao": "Algumas pessoas usam celular em reuniões contrariando as regras",
+      "en": "Some people use their phones in meetings against the rules",
       "sensoCorreto": 5,
       "senso": "SHITSUKE"
     },
     {
       "id": 17,
       "situacao": "Algumas reuniões são iniciadas com atraso",
+      "en": "Some meetings start late",
       "sensoCorreto": 5,
       "senso": "SHITSUKE"
     },
     {
       "id": 18,
       "situacao": "Alguns equipamentos com problemas de conservação",
+      "en": "Some equipment has maintenance problems",
       "sensoCorreto": 1,
       "senso": "SEIRI"
     },
     {
       "id": 19,
       "situacao": "Alguns locais de guarda são inadequados",
+      "en": "Some storage locations are inadequate",
       "sensoCorreto": 2,
       "senso": "SEITON"
     },
     {
       "id": 20,
       "situacao": "Alguns mecânicos não estão fazendo o histórico dos serviços conforme procedimento",
+      "en": "Some mechanics are not recording service history as required by the procedure",
       "sensoCorreto": 5,
       "senso": "SHITSUKE"
     },
     {
       "id": 21,
       "situacao": "Alguns operadores não estão apontando registros nos formulários",
+      "en": "Some operators are not filling in records on the forms",
       "sensoCorreto": 5,
       "senso": "SHITSUKE"
     },
     {
       "id": 22,
       "situacao": "Alguns operadores não fazem a limpeza de acordo com o padrão estabelecido",
+      "en": "Some operators do not clean according to the established standard",
       "sensoCorreto": 5,
       "senso": "SHITSUKE"
     },
     {
       "id": 23,
       "situacao": "Alguns recursos de uso esporádico estão dentro de armários não compartilhados",
+      "en": "Some rarely-used resources are kept inside non-shared cabinets",
       "sensoCorreto": 1,
       "senso": "SEIRI"
     },
     {
       "id": 24,
       "situacao": "Alguns recursos são guardados em locais de difícil acesso visual",
+      "en": "Some resources are stored in places that are hard to see",
       "sensoCorreto": 2,
       "senso": "SEITON"
     },
     {
       "id": 25,
       "situacao": "Área do café com açúcar derramado na mesa e no piso",
+      "en": "Coffee area with sugar spilled on the table and floor",
       "sensoCorreto": 3,
       "senso": "SEISO"
     },
     {
       "id": 26,
       "situacao": "Armários posicionados em locais que dificultam a abertura de portas",
+      "en": "Cabinets placed in spots that block doors from opening",
       "sensoCorreto": 2,
       "senso": "SEITON"
     },
     {
       "id": 27,
       "situacao": "As regras de convivência estão devidamente divulgadas",
+      "en": "The rules of conduct are properly publicized",
       "sensoCorreto": 4,
       "senso": "SEIKETSU"
     },
     {
       "id": 28,
       "situacao": "As pessoas deixam a copa suja após o uso",
+      "en": "People leave the break room dirty after use",
       "sensoCorreto": 3,
       "senso": "SEISO"
     },
     {
       "id": 29,
       "situacao": "As pessoas demoram a retornar do almoço, contrariando as regras do setor",
+      "en": "People take too long to return from lunch, against the department's rules",
       "sensoCorreto": 5,
       "senso": "SHITSUKE"
     },
     {
       "id": 30,
       "situacao": "As pessoas não obedecem às regras do fumo",
+      "en": "People do not follow the smoking rules",
       "sensoCorreto": 5,
       "senso": "SHITSUKE"
     },
     {
       "id": 31,
       "situacao": "As pessoas não têm iniciativa para renegociarem prazos em casos de atrasos",
+      "en": "People show no initiative to renegotiate deadlines when delays occur",
       "sensoCorreto": 5,
       "senso": "SHITSUKE"
     },
     {
       "id": 32,
       "situacao": "As tomadas elétricas não estão com uma identificação padronizada",
+      "en": "The electrical outlets do not have standardized labeling",
       "sensoCorreto": 4,
       "senso": "SEIKETSU"
     },
     {
       "id": 33,
       "situacao": "Banheiros com água no piso",
+      "en": "Restrooms with water on the floor",
       "sensoCorreto": 3,
       "senso": "SEISO"
     },
     {
       "id": 34,
       "situacao": "Cadeiras da sala de treinamento não são ergonômicas",
+      "en": "The training room chairs are not ergonomic",
       "sensoCorreto": 4,
       "senso": "SEIKETSU"
     },
     {
       "id": 35,
       "situacao": "Cadeiras de escritórios não ergonômicas",
+      "en": "Non-ergonomic office chairs",
       "sensoCorreto": 4,
       "senso": "SEIKETSU"
     },
     {
       "id": 36,
       "situacao": "Definição de sistemática de reconhecimento dos avanços de 5S",
+      "en": "Defining a system to recognize 5S progress",
       "sensoCorreto": 4,
       "senso": "SEIKETSU"
     },
     {
       "id": 37,
       "situacao": "Definição de temporalidade para descarte dos diversos tipos de documentos",
+      "en": "Defining retention periods for discarding the various types of documents",
       "sensoCorreto": 4,
       "senso": "SEIKETSU"
     },
     {
       "id": 38,
       "situacao": "Desenvolvimento de padrões de referência em ordem e limpeza",
+      "en": "Developing reference standards for order and cleanliness",
       "sensoCorreto": 4,
       "senso": "SEIKETSU"
     },
     {
       "id": 39,
       "situacao": "Desperdício de água e energia",
+      "en": "Waste of water and energy",
       "sensoCorreto": 1,
       "senso": "SEIRI"
     },
     {
       "id": 40,
       "situacao": "Divisão de áreas e responsabilidades pelo 5S",
+      "en": "Dividing areas and responsibilities for 5S",
       "sensoCorreto": 4,
       "senso": "SEIKETSU"
     },
     {
       "id": 41,
       "situacao": "Divulgação dos resultados das auditorias e autoavaliações de 5S, inclusive com fotografias",
+      "en": "Publicizing the results of 5S audits and self-assessments, including photographs",
       "sensoCorreto": 4,
       "senso": "SEIKETSU"
     },
     {
       "id": 42,
       "situacao": "Empilhamento de documentos dificulta a localização",
+      "en": "Stacking documents makes them hard to find",
       "sensoCorreto": 2,
       "senso": "SEITON"
     },
     {
       "id": 43,
       "situacao": "Estabelecimento de prazos para solução de problemas de 5S",
+      "en": "Setting deadlines to solve 5S problems",
       "sensoCorreto": 4,
       "senso": "SEIKETSU"
     },
     {
       "id": 44,
       "situacao": "Falta de alguns recursos necessários ao ambiente",
+      "en": "Lack of some resources needed in the workplace",
       "sensoCorreto": 1,
       "senso": "SEIRI"
     },
     {
       "id": 45,
       "situacao": "Falta definir local para bolsas",
+      "en": "A place for bags still needs to be defined",
       "sensoCorreto": 2,
       "senso": "SEITON"
     },
     {
       "id": 46,
       "situacao": "Falta demarcação de veículos no estacionamento",
+      "en": "Parking spaces for vehicles are not marked",
       "sensoCorreto": 2,
       "senso": "SEITON"
     },
     {
       "id": 47,
       "situacao": "Falta identificação em prateleiras e compartimentos fechados",
+      "en": "Shelves and closed compartments lack labeling",
       "sensoCorreto": 2,
       "senso": "SEITON"
     },
     {
       "id": 48,
       "situacao": "Falta identificação em várias pastas de documentos",
+      "en": "Several document folders lack labeling",
       "sensoCorreto": 2,
       "senso": "SEITON"
     },
     {
       "id": 49,
       "situacao": "Falta padronizar os itens das caixas de ferramentas dos mecânicos",
+      "en": "The contents of the mechanics' toolboxes need to be standardized",
       "sensoCorreto": 4,
       "senso": "SEIKETSU"
     },
     {
       "id": 50,
       "situacao": "Falta rotina para higienização de ar condicionado",
+      "en": "There is no routine for cleaning the air conditioning",
       "sensoCorreto": 4,
       "senso": "SEIKETSU"
     },
     {
       "id": 51,
       "situacao": "Falta sinalização de acesso a vários locais do ambiente",
+      "en": "Several areas lack access signage",
       "sensoCorreto": 2,
       "senso": "SEITON"
     },
     {
       "id": 52,
       "situacao": "Falta sinalização de segurança em alguns pontos",
+      "en": "Some spots lack safety signage",
       "sensoCorreto": 1,
       "senso": "SEIRI"
     },
     {
       "id": 53,
       "situacao": "Falta sinalização de segurança na entrada da subestação elétrica",
+      "en": "The entrance to the electrical substation lacks safety signage",
       "sensoCorreto": 2,
       "senso": "SEITON"
     },
     {
       "id": 54,
       "situacao": "Ferramentas da Manutenção largadas na área de produção",
+      "en": "Maintenance tools left lying in the production area",
       "sensoCorreto": 1,
       "senso": "SEIRI"
     },
     {
       "id": 55,
       "situacao": "Frequência de retirada dos resíduos das lixeiras insuficiente",
+      "en": "Trash bins are emptied too infrequently",
       "sensoCorreto": 3,
       "senso": "SEISO"
     },
     {
       "id": 56,
       "situacao": "Há alguns produtos defeituosos sem a devida identificação",
+      "en": "There are some defective products without proper identification",
       "sensoCorreto": 5,
       "senso": "SHITSUKE"
     },
     {
       "id": 57,
       "situacao": "Há mistura de lixo na coleta seletiva",
+      "en": "Waste is mixed up in the recycling collection",
       "sensoCorreto": 2,
       "senso": "SEITON"
     },
     {
       "id": 58,
       "situacao": "Há um volume de recursos maior que o espaço disponível",
+      "en": "There are more resources than the available space can hold",
       "sensoCorreto": 2,
       "senso": "SEITON"
     },
     {
       "id": 59,
       "situacao": "Há vários recursos empilhados dificultando o acesso",
+      "en": "Several resources are stacked up, hindering access",
       "sensoCorreto": 2,
       "senso": "SEITON"
     },
     {
       "id": 60,
       "situacao": "Identificação padronizada de pastas de documentos",
+      "en": "Standardized labeling of document folders",
       "sensoCorreto": 4,
       "senso": "SEIKETSU"
     },
     {
       "id": 61,
       "situacao": "Iluminação inadequada",
+      "en": "Inadequate lighting",
       "sensoCorreto": 4,
       "senso": "SEIKETSU"
     },
     {
       "id": 62,
       "situacao": "Instalações elétricas precárias provocando riscos",
+      "en": "Poor electrical installations creating hazards",
       "sensoCorreto": 1,
       "senso": "SEIRI"
     },
     {
       "id": 63,
       "situacao": "Lâmpadas sem funcionar",
+      "en": "Lamps that don't work",
       "sensoCorreto": 1,
       "senso": "SEIRI"
     },
     {
       "id": 64,
       "situacao": "Lixeiras transbordando",
+      "en": "Overflowing trash bins",
       "sensoCorreto": 2,
       "senso": "SEITON"
     },
     {
       "id": 65,
       "situacao": "Manchas nas paredes",
+      "en": "Stains on the walls",
       "sensoCorreto": 3,
       "senso": "SEISO"
     },
     {
       "id": 66,
       "situacao": "Não há identificação de ambientes e postos de trabalho",
+      "en": "There is no labeling of areas and workstations",
       "sensoCorreto": 4,
       "senso": "SEIKETSU"
     },
     {
       "id": 67,
       "situacao": "Não há lixeira suficiente para o volume de lixo gerado",
+      "en": "There are not enough trash bins for the amount of waste generated",
       "sensoCorreto": 3,
       "senso": "SEISO"
     },
     {
       "id": 68,
       "situacao": "Não há locais definidos para vários recursos do ambiente",
+      "en": "There are no defined places for several resources in the workplace",
       "sensoCorreto": 2,
       "senso": "SEITON"
     },
     {
       "id": 69,
       "situacao": "Não há procedimento para a limpeza",
+      "en": "There is no cleaning procedure",
       "sensoCorreto": 3,
       "senso": "SEISO"
     },
     {
       "id": 70,
       "situacao": "Não há providências para alguns problemas de conservação",
+      "en": "No action is taken on some maintenance problems",
       "sensoCorreto": 1,
       "senso": "SEIRI"
     },
     {
       "id": 71,
       "situacao": "Não há regras para atrasos em reuniões",
+      "en": "There are no rules for lateness in meetings",
       "sensoCorreto": 4,
       "senso": "SEIKETSU"
     },
     {
       "id": 72,
       "situacao": "Não há um padrão para a sinalização do piso",
+      "en": "There is no standard for floor markings",
       "sensoCorreto": 4,
       "senso": "SEIKETSU"
     },
     {
       "id": 73,
       "situacao": "Não há uma identificação padronizada de equipamentos",
+      "en": "There is no standardized labeling of equipment",
       "sensoCorreto": 4,
       "senso": "SEIKETSU"
     },
     {
       "id": 74,
       "situacao": "Não há uma sinalização padronizada para os avisos de segurança",
+      "en": "There is no standardized signage for safety notices",
       "sensoCorreto": 4,
       "senso": "SEIKETSU"
     },
     {
       "id": 75,
       "situacao": "O procedimento de limpeza só é cumprido quando sobra tempo",
+      "en": "The cleaning procedure is only followed when there is spare time",
       "sensoCorreto": 5,
       "senso": "SHITSUKE"
     },
     {
       "id": 76,
       "situacao": "Óleo de empilhadeira derramando no piso do almoxarifado",
+      "en": "Forklift oil leaking onto the warehouse floor",
       "sensoCorreto": 3,
       "senso": "SEISO"
     },
     {
       "id": 77,
       "situacao": "Óleo no piso",
+      "en": "Oil on the floor",
       "sensoCorreto": 3,
       "senso": "SEISO"
     },
     {
       "id": 78,
       "situacao": "Papéis no piso",
+      "en": "Papers on the floor",
       "sensoCorreto": 3,
       "senso": "SEISO"
     },
     {
       "id": 79,
       "situacao": "Papéis usados largados no piso do banheiro",
+      "en": "Used paper left on the restroom floor",
       "sensoCorreto": 3,
       "senso": "SEISO"
     },
     {
       "id": 80,
       "situacao": "Paredes com reboco irregular",
+      "en": "Walls with uneven plaster",
       "sensoCorreto": 1,
       "senso": "SEIRI"
     },
     {
       "id": 81,
       "situacao": "Poeira gerada no ambiente sem o devido controle",
+      "en": "Dust generated in the workplace without proper control",
       "sensoCorreto": 3,
       "senso": "SEISO"
     },
     {
       "id": 82,
       "situacao": "Ponta de cigarro em cantos de parede",
+      "en": "Cigarette butts in wall corners",
       "sensoCorreto": 3,
       "senso": "SEISO"
     },
     {
       "id": 83,
       "situacao": "Reciclagem de 5S para os novos colegas",
+      "en": "5S refresher training for new colleagues",
       "sensoCorreto": 4,
       "senso": "SEIKETSU"
     },
     {
       "id": 84,
       "situacao": "Recursos desnecessários são mantidos no ambiente",
+      "en": "Unnecessary resources are kept in the workplace",
       "sensoCorreto": 1,
       "senso": "SEIRI"
     },
     {
       "id": 85,
       "situacao": "Recursos espalhados de forma que a localização é dificultada",
+      "en": "Resources scattered in a way that makes them hard to find",
       "sensoCorreto": 2,
       "senso": "SEITON"
     },
     {
       "id": 86,
       "situacao": "Recursos improvisados dentro das bancadas gerando perdas",
+      "en": "Improvised resources inside the workbenches causing losses",
       "sensoCorreto": 1,
       "senso": "SEIRI"
     },
     {
       "id": 87,
       "situacao": "Resíduos de serviços da Manutenção deixados nos equipamentos",
+      "en": "Maintenance work debris left on the equipment",
       "sensoCorreto": 3,
       "senso": "SEISO"
     },
     {
       "id": 88,
       "situacao": "Reuniões relâmpago para discutir os problemas de 5S",
+      "en": "Quick stand-up meetings to discuss 5S problems",
       "sensoCorreto": 4,
       "senso": "SEIKETSU"
     },
     {
       "id": 89,
       "situacao": "Sala da copiadora com grampos e restos de papéis no piso",
+      "en": "Copier room with staples and scraps of paper on the floor",
       "sensoCorreto": 3,
       "senso": "SEISO"
     },
     {
       "id": 90,
       "situacao": "São encontrados problemas comportamentais durante as autoavaliações",
+      "en": "Behavioral problems are found during self-assessments",
       "sensoCorreto": 5,
       "senso": "SHITSUKE"
     },
     {
       "id": 91,
       "situacao": "São feitas autoavaliações mensais de 5S",
+      "en": "Monthly 5S self-assessments are carried out",
       "sensoCorreto": 4,
       "senso": "SEIKETSU"
     },
     {
       "id": 92,
       "situacao": "São mantidos alguns itens acima do nível máximo sinalizado",
+      "en": "Some items are kept above the marked maximum level",
       "sensoCorreto": 5,
       "senso": "SHITSUKE"
     },
     {
       "id": 93,
       "situacao": "Sinalização de sentido de fluxo, de rotação e de níveis de produto",
+      "en": "Signage for flow direction, rotation, and product levels",
       "sensoCorreto": 4,
       "senso": "SEIKETSU"
     },
     {
       "id": 94,
       "situacao": "Sujeira atrás do armário",
+      "en": "Dirt behind the cabinet",
       "sensoCorreto": 3,
       "senso": "SEISO"
     },
     {
       "id": 95,
       "situacao": "Sujeira em locais de difícil acesso",
+      "en": "Dirt in hard-to-reach places",
       "sensoCorreto": 3,
       "senso": "SEISO"
     },
     {
       "id": 96,
       "situacao": "Sujeira na parede",
+      "en": "Dirt on the wall",
       "sensoCorreto": 3,
       "senso": "SEISO"
     },
     {
       "id": 97,
       "situacao": "Tubulações com isolamentos térmicos quebrados",
+      "en": "Piping with broken thermal insulation",
       "sensoCorreto": 1,
       "senso": "SEIRI"
     },
     {
       "id": 98,
       "situacao": "Várias sinalizações estão em locais de difícil acesso visual",
+      "en": "Several signs are in places that are hard to see",
       "sensoCorreto": 2,
       "senso": "SEITON"
     },
     {
       "id": 99,
       "situacao": "Vazamento de produtos contaminando o piso",
+      "en": "Product leaks contaminating the floor",
       "sensoCorreto": 3,
       "senso": "SEISO"
     },
     {
       "id": 100,
       "situacao": "Vazamentos de óleo em algumas máquinas",
+      "en": "Oil leaks in some machines",
       "sensoCorreto": 1,
       "senso": "SEIRI"
     }

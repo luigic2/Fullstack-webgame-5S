@@ -1,6 +1,8 @@
 // SEIKETSU — Padronizar. Tire um snapshot do padrão; os itens embaralham e
 // você compara cada um com a foto de referência: conforme ou desvio de posição.
 import { motion } from 'framer-motion'
+import type { Lang } from '../../i18n'
+import { t } from '../../i18n'
 import { useGameStore } from '../../store/gameStore'
 import type { SeiketsuPhase as SeiketsuData, SeiketsuItem, SeiketsuSlot } from '../../types'
 import { Button } from '../../ui/Button'
@@ -11,39 +13,37 @@ interface Props {
 
 export function SeiketsuPhase({ fase }: Props): JSX.Element {
   const dispatch = useGameStore((s) => s.dispatch)
+  const lang = useGameStore((s) => s.lang)
 
   if (!fase.snapshot) {
     return (
       <div className="flex flex-col items-center gap-4 rounded-2xl bg-white/10 p-6 text-center text-white">
-        <p className="max-w-sm text-white/80">
-          Memorize a posição de cada item: esta é a referência. Ao fotografar, eles vão se embaralhar.
-        </p>
+        <p className="max-w-sm text-white/80">{t(lang, 'seiketsu.memorize')}</p>
         <div className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3">
           {fase.atual.map((item) => (
             <ItemCard key={item.id} item={item} />
           ))}
         </div>
-        <Button onClick={() => void dispatch('seiketsu.snapshot', {})}>📸 Tirar snapshot do padrão</Button>
+        <Button onClick={() => void dispatch('seiketsu.snapshot', {})}>{t(lang, 'seiketsu.snapshotBtn')}</Button>
       </div>
     )
   }
 
   return (
     <div className="rounded-2xl bg-white/10 p-4">
-      <p className="mb-3 text-sm font-semibold text-white/80">
-        Compare a fileira de cima com a foto. Marque <b>conforme</b> (mesma posição) ou <b>desvio</b> (mudou de lugar).
-      </p>
+      <p className="mb-3 text-sm font-semibold text-white/80">{t(lang, 'seiketsu.compare')}</p>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {fase.atual.map((slot) => (
           <SlotCard
             key={slot.id}
             slot={slot}
+            lang={lang}
             onAvaliar={(desvio) => void dispatch('seiketsu.avaliar', { spotId: slot.id, desvio })}
           />
         ))}
       </div>
 
-      <p className="mb-2 mt-5 text-xs font-bold uppercase tracking-wide text-marca-laranja">📸 Padrão (referência)</p>
+      <p className="mb-2 mt-5 text-xs font-bold uppercase tracking-wide text-marca-laranja">{t(lang, 'seiketsu.refLabel')}</p>
       <div className="grid grid-cols-2 gap-3 rounded-xl bg-marca-azul/30 p-2 sm:grid-cols-3">
         {fase.referencia.map((item) => (
           <ItemCard key={item.id} item={item} />
@@ -66,10 +66,11 @@ function ItemCard({ item }: { item: SeiketsuItem }): JSX.Element {
 
 interface SlotProps {
   slot: SeiketsuSlot
+  lang: Lang
   onAvaliar: (desvio: boolean) => void
 }
 
-function SlotCard({ slot, onAvaliar }: SlotProps): JSX.Element {
+function SlotCard({ slot, lang, onAvaliar }: SlotProps): JSX.Element {
   return (
     <motion.div layout className="flex flex-col items-center rounded-xl bg-white p-3 text-center shadow-lg">
       <span className="text-4xl" aria-hidden="true">
@@ -81,22 +82,22 @@ function SlotCard({ slot, onAvaliar }: SlotProps): JSX.Element {
           <button
             onClick={() => onAvaliar(false)}
             className="rounded bg-senso-seiso px-2 py-1 text-[11px] font-bold text-white"
-            aria-label={`${slot.nome} está na posição do padrão (conforme)`}
+            aria-label={t(lang, 'seiketsu.conformeAria', { nome: slot.nome })}
           >
-            ✓ Conforme
+            {t(lang, 'seiketsu.conforme')}
           </button>
           <button
             onClick={() => onAvaliar(true)}
             className="rounded bg-senso-seiri px-2 py-1 text-[11px] font-bold text-white"
-            aria-label={`${slot.nome} mudou de posição (desvio)`}
+            aria-label={t(lang, 'seiketsu.desvioAria', { nome: slot.nome })}
           >
-            ⚠ Desvio
+            {t(lang, 'seiketsu.desvio')}
           </button>
         </div>
       ) : (
         <p className={`mt-2 text-xs font-bold ${slot.acertou ? 'text-senso-seiso' : 'text-red-500'}`}>
           {slot.acertou ? '✅ ' : '❌ '}
-          {slot.avaliado ? 'Desvio' : 'Conforme'}
+          {slot.avaliado ? t(lang, 'seiketsu.resDesvio') : t(lang, 'seiketsu.resConforme')}
         </p>
       )}
     </motion.div>

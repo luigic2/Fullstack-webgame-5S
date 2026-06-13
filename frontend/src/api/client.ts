@@ -1,5 +1,6 @@
 // Cliente HTTP do servidor autoritativo. Só transporta dados — nenhuma
 // regra de negócio mora aqui.
+import type { Lang } from "../i18n";
 import type { CommandResponse, GameState } from "../types";
 
 const BASE = (import.meta.env.VITE_API_URL ?? "http://localhost:8000").replace(/\/$/, "");
@@ -16,8 +17,12 @@ export interface NewGame {
   state: GameState;
 }
 
-export async function createSession(): Promise<NewGame> {
-  const resp = await fetch(`${BASE}/api/session`, { method: "POST" });
+export async function createSession(lang: Lang): Promise<NewGame> {
+  const resp = await fetch(`${BASE}/api/session`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ lang }),
+  });
   if (!resp.ok) throw new Error("Não foi possível iniciar a partida.");
   return (await resp.json()) as NewGame;
 }

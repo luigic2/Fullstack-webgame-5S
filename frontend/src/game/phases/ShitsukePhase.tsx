@@ -3,6 +3,8 @@
 // cronômetro (autoritativo no servidor) é só exibido/suavizado aqui.
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
+import type { Lang } from '../../i18n'
+import { t } from '../../i18n'
 import { useGameStore } from '../../store/gameStore'
 import type { ShitsukeItem } from '../../types'
 import { SENSO_COR } from '../sensoInfo'
@@ -13,6 +15,7 @@ interface Props {
 
 export function ShitsukePhase({ itens }: Props): JSX.Element {
   const dispatch = useGameStore((s) => s.dispatch)
+  const lang = useGameStore((s) => s.lang)
   const score5s = useGameStore((s) => s.state?.score5s ?? 0)
   const desafio = useGameStore((s) => s.state?.shitsukeDesafio)
 
@@ -42,16 +45,14 @@ export function ShitsukePhase({ itens }: Props): JSX.Element {
         animate={{ borderColor: sustentado ? '#3FA34D' : acimaMeta ? '#C9A227' : '#E4572E' }}
         className="flex items-center gap-4 rounded-2xl border-2 bg-white/10 p-4 text-white"
       >
-        <Cronometro segundos={mostrado} total={duracao} sustentado={sustentado} acimaMeta={acimaMeta} />
+        <Cronometro segundos={mostrado} total={duracao} sustentado={sustentado} acimaMeta={acimaMeta} lang={lang} />
         <div className="flex-1">
           <p className="text-sm font-semibold text-white/80">
-            {sustentado
-              ? '✅ Padrão sustentado! Pode concluir a jornada.'
-              : `Mantenha a média ≥ ${meta} até o cronômetro zerar. Choques atingem 2 setores a cada 5s.`}
+            {sustentado ? t(lang, 'shitsuke.sustained') : t(lang, 'shitsuke.keep', { meta })}
           </p>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-2xl font-extrabold">{score5s}</span>
-            <span className="text-xs text-white/60">média 5S · meta {meta}</span>
+            <span className="text-xs text-white/60">{t(lang, 'shitsuke.avg')} · {t(lang, 'shitsuke.meta')} {meta}</span>
           </div>
           <div className="relative mt-1 h-3 w-full overflow-hidden rounded-full bg-white/15">
             <motion.div
@@ -66,7 +67,7 @@ export function ShitsukePhase({ itens }: Props): JSX.Element {
       </motion.div>
 
       <div className="rounded-2xl bg-white/10 p-4">
-        <p className="mb-3 text-sm font-semibold text-white/80">Checklist de auditoria 5S — corrija para reerguer o radar</p>
+        <p className="mb-3 text-sm font-semibold text-white/80">{t(lang, 'shitsuke.checklist')}</p>
         <ul className="space-y-2">
           {itens.map((item) => (
             <li
@@ -78,9 +79,9 @@ export function ShitsukePhase({ itens }: Props): JSX.Element {
               <button
                 onClick={() => void dispatch('shitsuke.corrigir', { itemId: item.id })}
                 className="shrink-0 rounded-lg bg-marca-azul px-3 py-1 text-xs font-bold text-white hover:brightness-125"
-                aria-label={`Auditar e corrigir: ${item.texto}`}
+                aria-label={t(lang, 'shitsuke.auditAria', { texto: item.texto })}
               >
-                🔍 Auditar agora
+                {t(lang, 'shitsuke.audit')}
               </button>
             </li>
           ))}
@@ -95,9 +96,10 @@ interface CronProps {
   total: number
   sustentado: boolean
   acimaMeta: boolean
+  lang: Lang
 }
 
-function Cronometro({ segundos, total, sustentado, acimaMeta }: CronProps): JSX.Element {
+function Cronometro({ segundos, total, sustentado, acimaMeta, lang }: CronProps): JSX.Element {
   const frac = total > 0 ? Math.max(0, Math.min(1, segundos / total)) : 0
   const raio = 34
   const circ = 2 * Math.PI * raio
@@ -122,7 +124,7 @@ function Cronometro({ segundos, total, sustentado, acimaMeta }: CronProps): JSX.
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className="text-2xl font-extrabold text-white">{sustentado ? '✓' : Math.ceil(segundos)}</span>
         <span className="text-[9px] font-semibold uppercase tracking-wide text-white/60">
-          {sustentado ? 'feito' : 'seg'}
+          {sustentado ? t(lang, 'shitsuke.done') : t(lang, 'shitsuke.sec')}
         </span>
       </div>
     </div>

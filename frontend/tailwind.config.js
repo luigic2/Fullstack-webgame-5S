@@ -12,7 +12,7 @@ export default {
         },
         senso: {
           seiri: '#E4572E',
-          seiton: '#2E86AB',
+          seiton: '#134459',
           seiso: '#3FA34D',
           seiketsu: '#6A4C93',
           shitsuke: '#C9A227',

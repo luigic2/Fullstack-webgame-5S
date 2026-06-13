@@ -13,7 +13,7 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field
 
-from .sensos import Senso
+from .sensos import Lang, Senso
 
 _SEED_PATH = Path(__file__).resolve().parent.parent / "seed" / "situacoes-5s-gabarito.json"
 
@@ -23,6 +23,7 @@ class Situacao(BaseModel):
 
     id: int
     situacao: str
+    en: str
     senso_correto: int = Field(alias="sensoCorreto")
     senso: str
 
@@ -43,9 +44,10 @@ def all_ids() -> list[int]:
     return sorted(_load().keys())
 
 
-def texto(situacao_id: int) -> str:
+def texto(situacao_id: int, lang: Lang = "pt") -> str:
     """Texto público de uma situação. Levanta KeyError se id inexistente."""
-    return _load()[situacao_id].situacao
+    s = _load()[situacao_id]
+    return s.situacao if lang == "pt" else s.en
 
 
 def senso_correto(situacao_id: int) -> Senso:

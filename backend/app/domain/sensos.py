@@ -8,6 +8,10 @@ vai ao cliente é o gabarito que liga uma *situação* ao seu senso correto.
 from __future__ import annotations
 
 from enum import IntEnum
+from typing import Literal
+
+# Idioma da partida. PT é o padrão; EN é a tradução.
+Lang = Literal["pt", "en"]
 
 
 class Senso(IntEnum):
@@ -20,20 +24,39 @@ class Senso(IntEnum):
     SHITSUKE = 5
 
 
-SENSO_PT: dict[Senso, str] = {
-    Senso.SEIRI: "Utilização",
-    Senso.SEITON: "Ordenação",
-    Senso.SEISO: "Limpeza",
-    Senso.SEIKETSU: "Padronização",
-    Senso.SHITSUKE: "Disciplina",
+# Tradução do senso (o nome japonês — SEIRI etc. — nunca é traduzido).
+SENSO_PT: dict[Lang, dict[Senso, str]] = {
+    "pt": {
+        Senso.SEIRI: "Utilização",
+        Senso.SEITON: "Ordenação",
+        Senso.SEISO: "Limpeza",
+        Senso.SEIKETSU: "Padronização",
+        Senso.SHITSUKE: "Disciplina",
+    },
+    "en": {
+        Senso.SEIRI: "Sort",
+        Senso.SEITON: "Set in Order",
+        Senso.SEISO: "Shine",
+        Senso.SEIKETSU: "Standardize",
+        Senso.SHITSUKE: "Sustain",
+    },
 }
 
-SENSO_ACAO: dict[Senso, str] = {
-    Senso.SEIRI: "Separar o necessário do desnecessário",
-    Senso.SEITON: "Um lugar para cada coisa; identificar e ordenar",
-    Senso.SEISO: "Limpar e, ao limpar, inspecionar",
-    Senso.SEIKETSU: "Criar e manter padrões visuais e de saúde",
-    Senso.SHITSUKE: "Transformar em hábito; auditar e sustentar",
+SENSO_ACAO: dict[Lang, dict[Senso, str]] = {
+    "pt": {
+        Senso.SEIRI: "Separar o necessário do desnecessário",
+        Senso.SEITON: "Um lugar para cada coisa; identificar e ordenar",
+        Senso.SEISO: "Limpar e, ao limpar, inspecionar",
+        Senso.SEIKETSU: "Criar e manter padrões visuais e de saúde",
+        Senso.SHITSUKE: "Transformar em hábito; auditar e sustentar",
+    },
+    "en": {
+        Senso.SEIRI: "Separate the necessary from the unnecessary",
+        Senso.SEITON: "A place for everything; identify and arrange",
+        Senso.SEISO: "Clean and, while cleaning, inspect",
+        Senso.SEIKETSU: "Create and keep visual and health standards",
+        Senso.SHITSUKE: "Turn it into a habit; audit and sustain",
+    },
 }
 
 # Ordem de progressão das fases. A fase N só libera quando N-1 atinge o
@@ -47,11 +70,11 @@ PHASE_ORDER: tuple[Senso, ...] = (
 )
 
 
-def senso_metadata(senso: Senso) -> dict[str, str | int]:
+def senso_metadata(senso: Senso, lang: Lang = "pt") -> dict[str, str | int]:
     """Metadados públicos de um senso (sem qualquer gabarito)."""
     return {
         "id": int(senso),
         "key": senso.name,
-        "pt": SENSO_PT[senso],
-        "acao": SENSO_ACAO[senso],
+        "pt": SENSO_PT[lang][senso],
+        "acao": SENSO_ACAO[lang][senso],
     }

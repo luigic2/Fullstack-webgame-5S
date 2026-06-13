@@ -4,6 +4,16 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from ..domain.sensos import Lang
+
+
+class NewGameRequest(BaseModel):
+    """Criação de partida: idioma escolhido pelo jogador (padrão PT)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    lang: Lang = "pt"
+
 
 class NewGameResponse(BaseModel):
     """Resposta de criação de partida: token assinado + estado público."""

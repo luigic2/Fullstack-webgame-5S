@@ -7,7 +7,8 @@ import { SeiriPhase } from './SeiriPhase'
 const dispatch = vi.fn()
 
 vi.mock('../../store/gameStore', () => ({
-  useGameStore: (selector: (s: { dispatch: typeof dispatch }) => unknown) => selector({ dispatch }),
+  useGameStore: (selector: (s: { dispatch: typeof dispatch; lang: 'pt' }) => unknown) =>
+    selector({ dispatch, lang: 'pt' }),
 }))
 
 const itens: SeiriItem[] = [

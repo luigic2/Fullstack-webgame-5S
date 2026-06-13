@@ -23,6 +23,7 @@ from .api.dtos import (
     CommandFeedback,
     CommandRequest,
     CommandResponse,
+    NewGameRequest,
     NewGameResponse,
 )
 from .api.hub import GameHub
@@ -72,10 +73,11 @@ def healthz() -> dict[str, str]:
 
 
 @app.post("/api/session", response_model=NewGameResponse)
-def new_session() -> NewGameResponse:
+def new_session(req: NewGameRequest | None = None) -> NewGameResponse:
     session_id = secrets.token_urlsafe(12)
     seed = secrets.randbelow(1_000_000)
-    state = engine.new_game(session_id, seed, now=time.time())
+    lang = req.lang if req is not None else "pt"
+    state = engine.new_game(session_id, seed, now=time.time(), lang=lang)
     store.create(state)
     return NewGameResponse(token=_make_token(session_id), state=public_view(state))
 

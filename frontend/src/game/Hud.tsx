@@ -1,5 +1,7 @@
 // Painel de status sempre visível: 5S Score, selo, streak e trilha das 5 fases.
 import { motion } from 'framer-motion'
+import { t } from '../i18n'
+import { useGameStore } from '../store/gameStore'
 import type { GameState } from '../types'
 import { SENSO_ORDER } from '../types'
 import { SENSO_COR, SENSO_SIMBOLO, sensoFromPhase } from './sensoInfo'
@@ -9,15 +11,16 @@ interface Props {
 }
 
 export function Hud({ state }: Props): JSX.Element {
+  const lang = useGameStore((s) => s.lang)
   const atual = sensoFromPhase(state.currentPhase)
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between gap-3 rounded-2xl bg-white/10 px-4 py-3 text-white">
-        <Metric label="5S Score" valor={`${state.score5s}`} sufixo={`· ${state.maturidade}`} />
-        <Metric label="Pontos" valor={`${state.score}`} />
-        <Metric label="Streak" valor={`🔥 ${state.streak}`} />
+        <Metric label={t(lang, 'hud.score')} valor={`${state.score5s}`} sufixo={`· ${state.maturidade}`} />
+        <Metric label={t(lang, 'hud.points')} valor={`${state.score}`} />
+        <Metric label={t(lang, 'hud.streak')} valor={`🔥 ${state.streak}`} />
       </div>
-      <ol className="flex items-center justify-between gap-1" aria-label="Progresso das fases">
+      <ol className="flex items-center justify-between gap-1" aria-label={t(lang, 'hud.progressAria')}>
         {SENSO_ORDER.map((k) => {
           const ativo = k === atual
           const liberado = state.unlocked.includes(k)
