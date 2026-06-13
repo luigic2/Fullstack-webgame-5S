@@ -1,5 +1,29 @@
 import { describe, expect, it } from 'vitest'
-import { badgeNome, sensoNome, t } from './index'
+import type { Lang } from './index'
+import { LANGS, STRINGS, badgeNome, sensoNome, t } from './index'
+
+const placeholders = (s: string): string[] => (s.match(/\{[a-zA-Z0-9_]+\}/g) ?? []).sort()
+
+describe('i18n — paridade PT/EN', () => {
+  it('toda chave existe em todos os idiomas e nenhuma string é vazia', () => {
+    const ptKeys = Object.keys(STRINGS.pt).sort()
+    for (const lang of LANGS) {
+      expect(Object.keys(STRINGS[lang]).sort()).toEqual(ptKeys)
+      for (const key of ptKeys) {
+        expect(STRINGS[lang][key as keyof (typeof STRINGS)['pt']].trim().length).toBeGreaterThan(0)
+      }
+    }
+  })
+
+  it('os placeholders {x} são idênticos entre PT e EN para cada chave', () => {
+    for (const key of Object.keys(STRINGS.pt) as (keyof (typeof STRINGS)['pt'])[]) {
+      const ref = placeholders(STRINGS.pt[key])
+      for (const lang of LANGS as Lang[]) {
+        expect(placeholders(STRINGS[lang][key])).toEqual(ref)
+      }
+    }
+  })
+})
 
 describe('i18n', () => {
   it('traduz a mesma chave em PT e EN', () => {

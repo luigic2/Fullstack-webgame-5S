@@ -336,7 +336,9 @@ const en: Record<TKey, string> = {
   'badge.mestre_sensos': 'Master of the Senses',
 }
 
-const STRINGS: Record<Lang, Record<TKey, string>> = { pt, en }
+export const LANGS: Lang[] = ['pt', 'en']
+
+export const STRINGS: Record<Lang, Record<TKey, string>> = { pt, en }
 
 // Nome japonês de cada senso (nunca traduzido).
 const SENSO_JP: Record<SensoKey, string> = {
