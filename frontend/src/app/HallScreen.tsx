@@ -79,7 +79,7 @@ function Card({ titulo, texto }: { titulo: string; texto: string }): JSX.Element
 
 function Confetti(): JSX.Element {
   const pedacos = Array.from({ length: 40 }, (_, i) => i)
-  const cores = ['#F47A20', '#2E86AB', '#3FA34D', '#6A4C93', '#C9A227']
+  const cores = ['#F47A20', '#134459', '#3FA34D', '#6A4C93', '#C9A227']
   return (
     <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
       {pedacos.map((i) => (

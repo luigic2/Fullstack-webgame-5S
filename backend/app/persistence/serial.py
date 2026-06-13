@@ -46,6 +46,7 @@ def to_json(state: GameState) -> str:
         "badges": sorted(state.badges),
         "acoes": state.acoes,
         "falsos_positivos": state.falsos_positivos,
+        "shitsuke_iniciado": state.shitsuke_iniciado,
         "shitsuke_last_shock_at": state.shitsuke_last_shock_at,
         "shitsuke_choques": state.shitsuke_choques,
         "shitsuke_sustain_since": state.shitsuke_sustain_since,
@@ -160,6 +161,7 @@ def from_json(raw: str) -> GameState:
         badges={b for b in badges_raw if isinstance(b, str)},
         acoes=_int(d, "acoes"),
         falsos_positivos=_int(d, "falsos_positivos"),
+        shitsuke_iniciado=bool(d.get("shitsuke_iniciado", False)),
         shitsuke_last_shock_at=_float(d, "shitsuke_last_shock_at"),
         shitsuke_choques=_int(d, "shitsuke_choques"),
         shitsuke_sustain_since=(

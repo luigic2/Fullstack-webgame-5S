@@ -9,9 +9,7 @@ describe('gameStore', () => {
     expect(s.mentor.mood).toBe('boasvindas')
   })
 
-  it('alterna o modo daltônico e encerra o onboarding', () => {
-    useGameStore.getState().toggleDaltonico()
-    expect(useGameStore.getState().daltonico).toBe(true)
+  it('encerra o onboarding', () => {
     useGameStore.getState().dismissOnboarding()
     expect(useGameStore.getState().onboarding).toBe(false)
   })

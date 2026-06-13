@@ -9,7 +9,7 @@ export const SENSO_COR: Record<SensoKey, string> = {
   SHITSUKE: '#C9A227',
 }
 
-// Símbolo redundante à cor (modo daltônico não depende só de cor).
+// Símbolo redundante à cor — acessibilidade para daltonismo sem depender só de cor.
 export const SENSO_SIMBOLO: Record<SensoKey, string> = {
   SEIRI: '◆',
   SEITON: '■',

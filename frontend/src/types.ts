@@ -79,6 +79,7 @@ export interface Desafio {
 
 export interface ShitsukeDesafio {
   ativo: boolean;
+  iniciado: boolean;
   sustentado: boolean;
   metaMedia: number;
   restanteSeg: number;

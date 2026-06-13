@@ -20,17 +20,6 @@ body {
   border-radius: 6px;
 }
 
-/* Modo daltônico: reforça com padrões/símbolos, sem depender só de cor. */
-.daltonico .senso-pattern {
-  background-image: repeating-linear-gradient(
-    45deg,
-    rgba(0, 0, 0, 0.18) 0,
-    rgba(0, 0, 0, 0.18) 4px,
-    transparent 4px,
-    transparent 8px
-  );
-}
-
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;

@@ -11,6 +11,7 @@ import { useGameStore } from '../store/gameStore'
 import type { GameState } from '../types'
 import { Button } from '../ui/Button'
 import { Onboarding } from './Onboarding'
+import { ResetButton } from './ResetButton'
 
 interface Props {
   state: GameState
@@ -18,8 +19,6 @@ interface Props {
 
 export function GameScreen({ state }: Props): JSX.Element {
   const dispatch = useGameStore((s) => s.dispatch)
-  const daltonico = useGameStore((s) => s.daltonico)
-  const toggleDaltonico = useGameStore((s) => s.toggleDaltonico)
   const onboarding = useGameStore((s) => s.onboarding)
   const senso = sensoFromPhase(state.currentPhase)
   const ultimaFase = state.currentPhase === 5
@@ -39,18 +38,12 @@ export function GameScreen({ state }: Props): JSX.Element {
     <main className="mx-auto min-h-screen max-w-5xl px-4 py-5">
       <header className="mb-4 flex items-center justify-between text-white">
         <h1 className="text-xl font-extrabold">eKaizen 5S</h1>
-        <button
-          onClick={toggleDaltonico}
-          aria-pressed={daltonico}
-          className="rounded-lg border border-white/30 px-3 py-1 text-xs font-semibold hover:bg-white/10"
-        >
-          {daltonico ? '🎨 Modo daltônico: ON' : '🎨 Modo daltônico'}
-        </button>
+        <ResetButton />
       </header>
 
       <div className="grid gap-5 lg:grid-cols-[300px_1fr]">
         <aside className="space-y-4">
-          <div className="flex justify-center rounded-2xl bg-white/5 p-3" style={{ backgroundColor: '#ffffff2e' }}>
+          <div className="flex justify-center rounded-2xl bg-white/5 p-3" style={{ backgroundColor: '#ffffff5c' }}>
             <Radar radar={state.radar} />
           </div>
           <Hud state={state} />
@@ -88,7 +81,10 @@ export function GameScreen({ state }: Props): JSX.Element {
           <PhaseIntroOverlay
             key={introPhase}
             phase={introPhase}
-            onDone={() => setIntroPhase(null)}
+            onDone={() => {
+              setIntroPhase(null)
+              if (introPhase === 5) void dispatch('shitsuke.iniciar')
+            }}
           />
         )}
       </AnimatePresence>

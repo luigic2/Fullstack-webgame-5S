@@ -16,13 +16,11 @@ interface GameStore {
   mentor: MentorState
   loading: boolean
   error: string | null
-  daltonico: boolean
   onboarding: boolean
   start: () => Promise<void>
   dispatch: (type: string, payload?: Record<string, unknown>) => Promise<void>
   applyStreamState: (state: GameState) => void
   setMentor: (mood: MentorMood, mensagem: string) => void
-  toggleDaltonico: () => void
   dismissOnboarding: () => void
 }
 
@@ -35,7 +33,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
   mentor: { mood: 'boasvindas', mensagem: BOAS_VINDAS },
   loading: false,
   error: null,
-  daltonico: false,
   onboarding: true,
 
   start: async () => {
@@ -79,6 +76,5 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   applyStreamState: (state) => set({ state }),
   setMentor: (mood, mensagem) => set({ mentor: { mood, mensagem } }),
-  toggleDaltonico: () => set((s) => ({ daltonico: !s.daltonico })),
   dismissOnboarding: () => set({ onboarding: false }),
 }))

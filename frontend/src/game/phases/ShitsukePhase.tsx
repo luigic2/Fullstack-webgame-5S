@@ -18,21 +18,23 @@ export function ShitsukePhase({ itens }: Props): JSX.Element {
 
   const meta = desafio?.metaMedia ?? 50
   const duracao = desafio?.duracaoSeg ?? 30
+  const iniciado = desafio?.iniciado ?? false
   const sustentado = desafio?.sustentado ?? false
   const restanteServidor = desafio?.restanteSeg ?? duracao
   const acimaMeta = score5s >= meta
 
   // Conta para baixo localmente entre os pushes (~3s) e re-sincroniza a cada
-  // novo estado do servidor. Só desce enquanto a média está acima da meta.
+  // novo estado do servidor. Só desce enquanto o desafio está iniciado e a média
+  // está acima da meta.
   const [restante, setRestante] = useState(restanteServidor)
   useEffect(() => setRestante(restanteServidor), [restanteServidor])
   useEffect(() => {
-    if (sustentado || !acimaMeta) return
+    if (sustentado || !acimaMeta || !iniciado) return
     const id = setInterval(() => setRestante((r) => Math.max(0, r - 0.1)), 100)
     return () => clearInterval(id)
-  }, [sustentado, acimaMeta, restanteServidor])
+  }, [sustentado, acimaMeta, iniciado, restanteServidor])
 
-  const mostrado = sustentado ? 0 : acimaMeta ? restante : duracao
+  const mostrado = sustentado ? 0 : acimaMeta && iniciado ? restante : duracao
 
   return (
     <div className="space-y-4">

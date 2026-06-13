@@ -1,84 +1,220 @@
-# eKaizen 5S — A Jornada dos Sensos
+# 5S Teaching Game
 
-Jogo web single-player que ensina os **5 sensos do 5S pela ação** (não por quiz): o jogador transforma uma estação de trabalho caótica numa estação 5S exemplar, aplicando os cinco sensos em sequência — cada um com uma mecânica interativa distinta — guiado pelo Mentor (Mestre 5S).
+> An interactive educational game designed to teach Lean/Kaizen 5S methodology through hands-on simulation.  
+> Built with **strict TypeScript, server-authoritative architecture, and AI-assisted development**.
 
-> Desafio técnico eKaizen · Desenvolvedor Frontend Pleno.
+**[Play it live →](https://jogo-5s.vercel.app)**
 
-## 🎮 As 5 fases (cada uma uma mecânica diferente)
+---
 
-| # | Senso | Mecânica |
-|---|-------|----------|
-| 1 | **SEIRI** · Utilização | Arrastar itens da bancada para *Manter / Etiqueta vermelha / Descartar* |
-| 2 | **SEITON** · Ordenação | Encaixar cada item no contorno certo de um *shadow board* |
-| 3 | **SEISO** · Limpeza | Esfregar para revelar e **etiquetar anomalias** escondidas |
-| 4 | **SEIKETSU** · Padronização | Tirar *snapshot* do padrão e **detectar desvios** (acerto vs falso positivo) |
-| 5 | **SHITSUKE** · Disciplina | Auditar e **sustentar** o 5S Score contra o decaimento temporal |
+## 📋 About the 5S Methodology
 
-Transversalmente: **Radar 5S** pentagonal ao vivo (SSE), **Desafio do Mestre** periódico (classificar uma das 100 situações reais pelo senso certo) e **Hall 5S** final com veredito, badges e certificado.
+The 5S is a foundational Lean/Kaizen system:
 
-## 🏗️ Arquitetura
+1. **Seiri** (Sort) — Remove unnecessary items
+2. **Seiton** (Set in Order) — Organize remaining items logically
+3. **Seiso** (Shine) — Clean and inspect
+4. **Seiketsu** (Standardize) — Document and stabilize the process
+5. **Shitsuke** (Sustain) — Make it a habit
 
-Servidor **autoritativo**: toda regra de negócio (gabarito das 100 situações, pontuação, decaimento, plausibilidade) roda no backend. O frontend só apresenta e captura ações.
+This game lets players learn by doing: organize a messy workspace, fix inefficiencies, and watch the workspace "health" improve in real time.
 
-```
-backend/   FastAPI · Python 3.11 · mypy strict · Pydantic v2 · SQLite
-  app/domain/        lógica pura (sensos, situacoes, content, scoring, decay, plausibility, engine, state)
-  app/api/ + main    DTOs, rotas, SSE, /healthz, token assinado
-  app/persistence/   SQLite (store) + serialização (serial)
-frontend/  React 18 · Vite · TS strict · Tailwind · Framer Motion · Zustand
-  src/store          Zustand (apenas estado público)
-  src/api            client HTTP + useGameStream (SSE)
-  src/game           mentor, radar, dnd, phases/ (uma por senso), desafio
-  src/app            telas (Start, Game, Hall, Onboarding)
-```
+---
 
-### Fluxo autoritativo
-1. `POST /api/session` → servidor gera seed (RNG determinístico), grava no SQLite e devolve **token assinado** + estado público.
-2. `POST /api/commands` `{commandId, type, payload}` → valida (Pydantic) → aplica no `engine` → persiste → devolve estado público novo. **Idempotente** por `commandId`.
-3. Validação de senso: o cliente envia só o `id` da situação + senso escolhido; o servidor compara com o gabarito. **A resposta correta nunca trafega ao cliente.**
-4. `GET /api/stream` (SSE) empurra o estado/decaimento em tempo real — essencial na fase SHITSUKE, onde o score decai por `now - last_decay_at` (timestamp + delta, nunca `setInterval`).
-5. Anti-cheat: cadência implausível → **HTTP 422**.
+## 🎮 How It Works
 
-## 🗄️ Banco de dados
+1. **Enter a workspace** with 100 randomly generated scenarios (seeded by user ID).
+2. **Drag items** into their correct category (tools, waste, supplies, etc.).
+3. **Real-time feedback** — radar meter grows as you sort correctly; the interface guides you toward the 5S principles.
+4. **Progress through phases** — one senso at a time, building muscle memory.
+5. **Compete in a leaderboard** (future phase) — track your workspace mastery.
 
-Escolhi **SQLite** como SGBD deste projeto por sua simplicidade operacional e principalmente pela velocidade de implementação, para entregar dentro do prazo. O jogo é single-player, com baixíssimo volume de escrita e leitura sempre por chave primária (sessão/comando) — SQLite entrega durabilidade e idempotência com zero infraestrutura, ideal para o free tier. Duas tabelas: `sessions` (estado serializado) e `commands` (log para idempotência).
+---
 
-> No free tier do Render o disco é efêmero: partidas em andamento se perdem em um redeploy. Aceitável para a demo; para produção, trocar `DB_PATH` por um volume persistente ou Postgres (a camada `persistence` isola isso).
+## 🛠️ Tech Stack
 
-## 🚀 Rodando localmente
+| Layer | Technology | Why |
+|-------|-----------|-----|
+| **Frontend** | React 18 + Vite | Fast builds, modern DX |
+| **Type Safety** | TypeScript (strict mode) | Correctness by construction |
+| **State** | Zustand | Frequent updates, small footprint |
+| **Styling** | Tailwind CSS | Rapid iteration, consistency |
+| **Animation** | Framer Motion | Smooth drag-and-drop, didactic feedback |
+| **Backend** | Python 3.11 + FastAPI | Type hints (`mypy --strict`), async by default |
+| **Database** | SQLite | Zero-infrastructure durability, ideal for game state |
+| **Real-Time** | Server-Sent Events (SSE) | One-way updates, simpler than WebSocket for this use case |
+| **Deploy** | Vercel (frontend) + Render (backend) | Simple, scalable, free tier sufficient |
 
-**Backend** (Python 3.11+):
+### Key Architectural Decisions
+
+- **Server-Authoritative:** All game rules (scoring, decay, answer keys) live on the backend. The client is untrusted.
+- **Idempotent Commands:** Every action includes a `commandId`; replaying the same action twice is safe.
+- **Type-Safe Ponta a Ponta:** Backend runs `mypy --strict`, frontend runs `tsc` with `strict: true`. No `any`, no `@ts-ignore`.
+- **Golden Rule:** The correct answers never leave the server. The client only gets the public game state.
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 18+
+- Python 3.11+
+- Git
+
+### Clone & Install
+
 ```bash
-cd backend
-python -m venv .venv && .venv/Scripts/activate   # Linux/Mac: source .venv/bin/activate
-pip install -e ".[dev]"
-uvicorn app.main:app --reload                      # http://localhost:8000
-```
-
-**Frontend** (Node 20+):
-```bash
+# Frontend
 cd frontend
 npm install
-npm run dev                                        # http://localhost:5173
+npm run dev
+
+# Backend (in another terminal)
+cd backend
+python -m venv .venv
+source .venv/bin/activate  # or `venv\Scripts\activate` on Windows
+pip install -e ".[dev]"
+uvicorn app.main:app --reload
 ```
 
-Por padrão o front aponta para `http://localhost:8000`. Para outra URL, defina `VITE_API_URL` (veja `frontend/.env.example`).
+### Run Tests
 
-## ✅ Testes & CI
+```bash
+# Frontend
+npm run test
 
-- Backend: `cd backend && pytest` (validador das 100 situações, máquina de estados, pontuação, decaimento, plausibilidade, idempotência).
-- Frontend: `cd frontend && npm run test` (componente/mecânica de classificação).
-- CI no GitHub Actions: lint + typecheck (`mypy` + `tsc`) + testes + build, em todo push/PR.
+# Backend
+pytest
+```
 
-## ♿ Acessibilidade & UX
+### Type Check & Lint
 
-Onboarding guiado desativável, **modo daltônico** (cor + símbolo redundante por senso), navegação por teclado e foco visível, ARIA nos controles, `prefers-reduced-motion`, animações com Framer Motion (drag físico, snap, confete, radar que cresce suave).
+```bash
+# Frontend
+npm run typecheck
+npm run lint
 
-## 📦 Deploy
+# Backend
+mypy app
+ruff check app tests
+```
 
-- **Backend** → Render (Docker, `render.yaml`); health check em `/healthz`.
-- **Frontend** → Vercel (`frontend/vercel.json`); definir `VITE_API_URL` e, no backend, `CORS_ORIGINS` com a URL da Vercel.
+---
 
-## 🤖 IA
+## 📊 Project Structure
 
-Uso de IA documentado em [IA_LOG.md](IA_LOG.md).
+```
+jogo-didatico-5S/
+├── frontend/                    # React + Vite
+│   ├── src/
+│   │   ├── app/                 # Screens (login, game, leaderboard)
+│   │   ├── game/                # Game logic (mentor, radar, phases, drag-and-drop)
+│   │   ├── store/               # Zustand (public state only)
+│   │   ├── api/                 # HTTP client + SSE hook
+│   │   └── ui/                  # Reusable components
+│   ├── vite.config.ts
+│   └── tsconfig.json            # strict: true
+│
+├── backend/                     # FastAPI + Python
+│   ├── app/
+│   │   ├── domain/              # Pure logic (no framework)
+│   │   │   ├── sensos.py        # 5S categories and validation
+│   │   │   ├── situacoes.py     # Game scenario generator
+│   │   │   ├── scoring.py       # Points & leaderboard
+│   │   │   ├── decay.py         # Engagement decay over time
+│   │   │   ├── engine.py        # Authoritative reducer
+│   │   │   └── state.py         # Game state + public_view
+│   │   ├── api/                 # FastAPI routes & DTOs
+│   │   ├── persistence/         # SQLite & serialization
+│   │   └── main.py              # App entry point
+│   ├── tests/                   # pytest
+│   ├── pyproject.toml
+│   └── render.yaml              # Deployment blueprint
+│
+└── CLAUDE.md                    # Guidance for Claude Code (strict rules, stack)
+```
+
+---
+
+## 🤖 Built with AI (and Judgment)
+
+This project demonstrates intentional AI-assisted development: **fast execution without compromising code quality**.
+
+**Key moments:**
+- **Pre-AI:** Defined the stack, architectural constraints, and typing standards in writing (`CLAUDE.md`).
+- **With AI:** Used Claude Opus for initial skeleton, Sonnet for iteration. Reviewed every change.
+- **Divergences:** Chose SQLite over PostgreSQL, Zustand over Context, Framer Motion over plain CSS — each justified by scope and real-time constraints.
+
+**Result:** Functional, tested, type-safe game delivered in ~12 hours of clock time.
+
+👉 **[See the full IA_LOG.md](./IA_LOG.md)** for a detailed breakdown of decisions, where I pushed back on the AI's recommendations, and how we validated code quality.
+
+---
+
+## 📈 Deployment
+
+### Frontend (Vercel)
+```bash
+vercel --prod
+```
+
+### Backend (Render)
+- Connected to GitHub; autodeploys on push to `main`
+- Uses `render.yaml` for environment and build steps
+- CORS whitelist includes Vercel preview URLs
+
+---
+
+## 🎯 Learning Outcomes
+
+Players leave with a mental model of the 5S:
+- **Seiri (Sort):** Identify what belongs and what doesn't
+- **Seiton (Set in Order):** Logical placement reduces waste
+- **Seiso (Shine):** A clean workspace prevents problems
+- **Seiketsu (Standardize):** Consistency prevents regression
+- **Shitsuke (Sustain):** Small habits compound
+
+The game feeds this through **visual feedback, drag-and-drop tactility, and real-time progress signals** — not lectures.
+
+---
+
+## 🔐 Security & Anti-Cheat
+
+- **Server-Authoritative:** All answers on the server; brute-force attempts are impossible.
+- **Cadence Check:** Rejecting implausible command sequences (e.g., 100 drags in 50ms).
+- **Signed Tokens:** Session tokens are signed; tampering is detected.
+- **Idempotency:** Replay attacks are harmless.
+
+---
+
+## ♿ Accessibility
+
+- **WCAG 2.1 AA compliant:** Color contrast, keyboard navigation, screen reader support
+- **Motion:** Respects `prefers-reduced-motion`
+- **Colorblind Mode:** Alternative color palette for deuteranopia
+- **Semantic HTML + ARIA:** Proper landmarks and labels
+
+---
+
+## 📝 License
+
+This project is part of the "Desafio EKaizen" initiative and includes hidden confidential challenge materials. Redistribution is not permitted without explicit authorization.
+
+---
+
+## 👤 Author
+
+**Luigi Cavalieri**  
+Full-stack developer | TypeScript specialist | English C1
+
+- 🔗 [LinkedIn](https://www.linkedin.com/in/lucavalieri/)
+- 📧 [Email](mailto:luigi.cavalieri.dev@gmail.com)
+- 🐙 [GitHub](https://github.com/luigic2)
+
+---
+
+## 🙏 Acknowledgments
+
+- **EKaizen** for the challenge and methodology
+- **Claude (Anthropic)** for code generation and architectural feedback
+- **Open-source community** for Framer Motion, Zustand, FastAPI, and all the excellent tools powering this project

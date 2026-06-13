@@ -194,6 +194,7 @@ def _entrar_shitsuke(seed: int) -> engine.GameState:
     state.radar = dict.fromkeys(PHASE_ORDER, 100.0)
     state.last_decay_at = 0.0
     state.shitsuke_last_shock_at = 0.0
+    state.shitsuke_iniciado = True  # simula o jogador ter dispensado o overlay
     return state
 
 
@@ -226,6 +227,31 @@ def test_shitsuke_sustentacao_libera_conclusao() -> None:
     out = engine.apply(state, "fase.avancar", {}, now=34.0)
     assert out.correto is True
     assert state.finished is True
+
+
+def test_shitsuke_congelado_ate_iniciar() -> None:
+    # Enquanto o overlay de intro está aberto (shitsuke_iniciado=False), os ticks
+    # não decaem o radar, não disparam choques e o cronômetro fica cheio.
+    state = _entrar_shitsuke(seed=1)
+    state.shitsuke_iniciado = False
+    engine.apply(state, "shitsuke.tick", {}, now=6.0)
+    assert state.shitsuke_choques == 0
+    assert all(state.radar[s] == 100.0 for s in PHASE_ORDER)
+    assert state.shitsuke_sustain_since is None
+    assert state.shitsuke_restante == DURACAO_DESAFIO
+    # Após dispensar o overlay, o desafio começa limpo a partir do `now` atual.
+    out = engine.apply(state, "shitsuke.iniciar", {}, now=6.0)
+    assert out.correto is None
+    assert state.shitsuke_iniciado is True
+    assert state.shitsuke_last_shock_at == 6.0
+    assert state.last_decay_at == 6.0
+    # Agora os ticks voltam a decair e a contar a sustentação.
+    engine.apply(state, "shitsuke.tick", {}, now=7.0)
+    assert state.shitsuke_sustain_since == 7.0
+    assert state.radar[PHASE_ORDER[0]] < 100.0
+    # Idempotente: reaplicar `iniciar` não reinicia os timestamps.
+    engine.apply(state, "shitsuke.iniciar", {}, now=99.0)
+    assert state.shitsuke_last_shock_at == 6.0
 
 
 def test_score_5s_e_media_dos_eixos() -> None:
