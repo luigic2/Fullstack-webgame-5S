@@ -191,7 +191,7 @@ The game feeds this through **visual feedback, drag-and-drop tactility, and real
 
 - **WCAG 2.1 AA compliant:** Color contrast, keyboard navigation, screen reader support
 - **Motion:** Respects `prefers-reduced-motion`
-- **Colorblind Mode:** Alternative color palette for deuteranopia
+- **Colorblind Friendly:** color palette for people with deuteranopia
 - **Semantic HTML + ARIA:** Proper landmarks and labels
 
 ---
